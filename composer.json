@@ -1,0 +1,8 @@
+{
+    "name": "meta-box/mbb-parser",
+    "description": "Parse meta box settings from JSON",
+    "type": "library",
+    "autoload": {
+        "psr-4": {"MBBParser\\": "src/"}
+    }
+}
