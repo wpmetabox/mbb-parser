@@ -11,11 +11,11 @@ class RestApi {
 
 	public function register_routes() {
 		register_rest_route( 'mbbparser', 'settings', [
-			'method'  => WP_REST_Server::READABLE,
+			'method'  => WP_REST_Server::CREATABLE,
 			'callback' => [ $this, 'get_meta_box_settings' ],
 		] );
 		register_rest_route( 'mbbparser', 'code', [
-			'method'  => WP_REST_Server::READABLE,
+			'method'  => WP_REST_Server::CREATABLE,
 			'callback' => [ $this, 'get_meta_box_code' ],
 		] );
 	}
