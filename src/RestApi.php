@@ -29,7 +29,7 @@ class RestApi {
 	}
 
 	public function get_meta_box_settings( WP_REST_Request $request ) {
-		$parser = new Parsers\MetaBox( $request->get_params() );
+		$parser = new Parsers\MetaBox( $request->get_json_params() );
 		$parser->parse();
 
 		return $parser->get_settings();
