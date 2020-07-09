@@ -6,13 +6,13 @@ use MBBParser\SettingsTrait;
 class Base {
 	use SettingsTrait;
 
-	protected $ignore_empty_keys = array();
+	protected $ignore_empty_keys = [];
 
 	/**
 	 * Do not allow to create new instance via traditional constructor.
 	 */
 	public function __construct( $settings ) {
-		$this->settings = $settings;
+		$this->settings = (array) $settings;
 	}
 
 	protected function parse_boolean_values() {

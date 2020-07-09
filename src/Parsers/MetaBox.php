@@ -133,16 +133,18 @@ class MetaBox extends Base {
 	}
 
 	private function parse_tabs() {
-		$this->tabs = array();
-		foreach ( $this->fields as $field ) {
-			if ( empty( $field['type'] ) || 'tab' !== $field['type'] ) {
-				continue;
+		$this->tabs = [];
+		if ( ! empty( $this->fields ) ) {
+			foreach ( $this->fields as $field ) {
+				if ( empty( $field['type'] ) || 'tab' !== $field['type'] ) {
+					continue;
+				}
+
+				$label = isset( $field['label'] ) ? $field['label'] : '';
+				$icon  = isset( $field['icon'] ) ? $field['icon'] : '';
+
+				$this->settings['tabs'][ $field['id'] ] = compact( 'label', 'icon' );
 			}
-
-			$label = isset( $field['label'] ) ? $field['label'] : '';
-			$icon  = isset( $field['icon'] ) ? $field['icon'] : '';
-
-			$this->settings['tabs'][ $field['id'] ] = compact( 'label', 'icon' );
 		}
 
 		if ( empty( $this->tabs ) ) {
