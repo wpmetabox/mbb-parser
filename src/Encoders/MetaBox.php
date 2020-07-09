@@ -11,10 +11,11 @@ class MetaBox {
 	private $function_name = 'your_prefix_register_meta_boxes';
 
 	public function __construct( $settings ) {
-		$this->settings = $settings;
+		$this->text_domain = $settings['text_domain'] ?? 'text-domain';
+		$this->prefix      = $settings['prefix'] ?? '';
 
-		$this->text_domain = empty( $settings['text_domain'] ) ? 'text-domain' : $settings['text_domain'];
-		$this->prefix      = empty( $settings['prefix'] ) ? '' : $settings['prefix'];
+		unset( $settings['text_domain'], $settings['prefix'] );
+		$this->settings = $settings;
 	}
 
 	public function get_encoded_string() {
