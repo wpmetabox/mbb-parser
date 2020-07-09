@@ -22,7 +22,6 @@ class MetaBox extends Base {
 			$this->parse_fields( $this->settings['fields'] );
 		}
 
-		unset( $this->prefix );
 		unset( $this->is_id_modified );
 
 		$this->remove_empty_values();
