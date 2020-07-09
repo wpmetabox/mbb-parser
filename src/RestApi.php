@@ -1,37 +1,26 @@
 <?php
 namespace MBBParser;
 
-use WP_REST_Server;
-use WP_REST_Request;
-
 class RestApi {
 	public function __construct() {
-		add_action( 'rest_api_init', [$this, 'register_routes'] );
+		add_action( 'rest_api_init', [ $this, 'register_routes' ] );
 	}
 
 	public function register_routes() {
-		register_rest_route( 'mbb-parser', 'settings', [
-			'method'  => WP_REST_Server::CREATABLE,
-			'callback' => [ $this, 'get_meta_box_settings' ],
-		] );
-		register_rest_route( 'mbb-parser', 'code', [
-			'method'  => WP_REST_Server::CREATABLE,
-			'callback' => [ $this, 'get_meta_box_code' ],
+		register_rest_route( 'mbb-parser', 'meta-box', [
+			'methods'  => \WP_REST_Server::CREATABLE,
+			'callback' => [ $this, 'generate_code' ],
 		] );
 	}
 
-	public function get_meta_box_code( WP_REST_Request $request ) {
-		$settings = $this->get_meta_box_settings( $request );
+	public function generate_code( $request ) {
+		$parser = new Parsers\MetaBox( $request->get_json_params() );
+		$parser->parse();
+
+		$settings = $parser->get_settings();
 		$encoder = new Encoders\MetaBox( $settings );
 		$encoder->encode();
 
 		return $encoder->get_encoded_string();
-	}
-
-	public function get_meta_box_settings( WP_REST_Request $request ) {
-		$parser = new Parsers\MetaBox( $request->get_json_params() );
-		$parser->parse();
-
-		return $parser->get_settings();
 	}
 }
