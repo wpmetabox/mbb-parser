@@ -48,6 +48,7 @@ class Base {
 				unset( $this->settings[ $key ] );
 			}
 		}
+		return $this;
 	}
 
 	protected function parse_array_attributes( $key ) {

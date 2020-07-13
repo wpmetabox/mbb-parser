@@ -225,7 +225,7 @@ class MetaBox extends Base {
 		$parser->parse();
 		$field = $parser->get_settings();
 
-		if ( $this->prefix ) {
+		if ( $this->prefix && isset( $field['id'] ) ) {
 			$field['id'] = $this->prefix . $field['id'];
 		}
 

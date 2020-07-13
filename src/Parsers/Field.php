@@ -20,7 +20,8 @@ class Field extends Base {
 			->parse_array_attributes( 'query_args' )
 			->parse_custom_attributes()
 			->parse_conditional_logic()
-			->remove_empty_values();
+			->remove_empty_values()
+			->remove_id();
 	}
 
 	private function remove_tabs() {
@@ -117,6 +118,13 @@ class Field extends Base {
 			$this->std = is_string( $this->std ) ? preg_split('/\r\n|\r|\n/', $this->std ) : $this->std;
 		}
 
+		return $this;
+	}
+
+	private function remove_id() {
+		if ( in_array( $this->type, ['divider', 'heading'] ) ) {
+			unset( $this->id );
+		}
 		return $this;
 	}
 }

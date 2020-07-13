@@ -24,6 +24,9 @@ class Field {
 	}
 
 	private function transform_id_prefix() {
+		if ( empty( $this->id ) ) {
+			return;
+		}
 		$this->id = substr( $this->id, strlen( $this->id_prefix ) );
 		$this->id = '{{ prefix }}' . $this->id;
 	}
