@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInit13e61e46616a730a839e8a99997ea2f4
 {
     public static $prefixLengthsPsr4 = array (
+        'R' => 
+        array (
+            'Riimu\\Kit\\PHPEncoder\\' => 21,
+        ),
         'M' => 
         array (
             'MBBParser\\' => 10,
@@ -14,6 +18,10 @@ class ComposerStaticInit13e61e46616a730a839e8a99997ea2f4
     );
 
     public static $prefixDirsPsr4 = array (
+        'Riimu\\Kit\\PHPEncoder\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/riimu/kit-phpencoder/src',
+        ),
         'MBBParser\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',

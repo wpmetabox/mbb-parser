@@ -2,6 +2,7 @@
 namespace MBBParser\Encoders;
 
 use MBBParser\SettingsTrait;
+use Riimu\Kit\PHPEncoder\PHPEncoder;
 
 class MetaBox {
 	use SettingsTrait;
@@ -29,11 +30,14 @@ class MetaBox {
 			$this->encode_fields( $this->settings['fields'] );
 		}
 
-		$this->encoded_string = var_export( $this->settings, true );
+		$encoder = new PHPEncoder();
+		$this->encoded_string = $encoder->encode( $this->settings, [
+			'array.base'  => 4,
+			'array.align' => true,
+		] );
 
 		$this->replace_get_text_function()
 			->replace_field_id_prefix()
-			->fix_code_standard()
 			->wrap_function_call();
 	}
 
@@ -58,9 +62,6 @@ class MetaBox {
 		}
 	}
 
-	/**
-	 * Replace translatable string with gettext function.
-	 */
 	private function replace_get_text_function() {
 		$find    = "/'###(.*)###'/";
 		$replace = "esc_html__( '$1', '" . $this->text_domain . "' )";
@@ -74,44 +75,17 @@ class MetaBox {
 		return $this;
 	}
 
-	/**
-	 * Make text compatible with WordPress coding standard.
-	 */
-	private function fix_code_standard() {
-		$search = array(
-			'/  /', // Replace space with tabs.
-			"/\n\t/", // Add 1 more indent to all lines.
-			"/\n\)/", // Indent the last closing bracket ")".
-			"/\n\t{3,}\\d+ =>\s*$/m", // Remove integer index for fields.
-			"/=> \n\t+array \(/", // Move array() of field settings on the same line.
-		);
-
-		$replace = array(
-			"\t",
-			"\n\t\t",
-			"\n\t)",
-			'',
-			'=> array(',
-		);
-
-		$this->encoded_string = preg_replace( $search, $replace, $this->encoded_string );
-		return $this;
-	}
-
-	/**
-	 * Wrap encoded string with function name and hook.
-	 */
 	private function wrap_function_call() {
 		$this->encoded_string = sprintf(
 			'<?php
 add_filter( \'rwmb_meta_boxes\', \'%1$s\' );
 
 function %1$s( $meta_boxes ) {
-	$prefix = \'%3$s\';
+    $prefix = \'%3$s\';
 
-	$meta_boxes[] = %2$s;
+    $meta_boxes[] = %2$s;
 
-	return $meta_boxes;
+    return $meta_boxes;
 }',
 			$this->function_name,
 			$this->encoded_string,
