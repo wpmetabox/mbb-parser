@@ -115,7 +115,11 @@ class Field extends Base {
 			|| in_array( $this->field_type, ['select_tree', 'checkbox_tree', 'checkbox_list', 'checkbox_tree'] );
 
 		if ( $is_multiple ) {
-			$this->std = is_string( $this->std ) ? preg_split('/\r\n|\r|\n/', $this->std ) : $this->std;
+			$this->std = is_string( $this->std ) && ! empty( $this->std ) ? preg_split('/\r\n|\r|\n/', $this->std ) : $this->std;
+		}
+
+		if ( empty( $this->std ) ) {
+			unset( $this->std );
 		}
 
 		return $this;
