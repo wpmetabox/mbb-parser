@@ -20,6 +20,9 @@ class MetaBox extends Base {
 
 		if ( isset( $this->settings['fields'] ) && is_array( $this->settings['fields'] ) ) {
 			$this->parse_fields( $this->settings['fields'] );
+
+			// Online Generator uses field IDs as array index. We don't need that in the output.
+			$this->fields = array_values( $this->fields );
 		}
 
 		unset( $this->is_id_modified );
