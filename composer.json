@@ -3,7 +3,8 @@
     "description": "Parse meta box settings from JSON",
     "type": "library",
     "autoload": {
-        "psr-4": {"MBBParser\\": "src/"}
+        "psr-4": {"MBBParser\\": "src/"},
+        "files": ["src/functions.php"]
     },
     "require": {
         "riimu/kit-phpencoder": "^2.4"

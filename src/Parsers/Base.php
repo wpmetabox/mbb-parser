@@ -1,7 +1,6 @@
 <?php
 namespace MBBParser\Parsers;
 
-use MBBParser;
 use MBBParser\SettingsTrait;
 
 class Base {
@@ -94,15 +93,20 @@ class Base {
 	}
 
 	protected function parse_custom_attributes() {
-		if ( ! isset( $this->attrs ) ) {
+		if ( isset( $this->attributes ) ) {
+			$param = 'attributes';
+		} elseif ( isset( $this->attrs ) ) {
+			$param = 'attrs';
+		} else {
 			return $this;
 		}
-		$this->parse_array_attributes( 'attrs' );
-		foreach ( $this->attrs as $key => $value ) {
+
+		$this->parse_array_attributes( $param );
+		foreach ( $this->{$param} as $key => $value ) {
 			$this->{$key} = $value;
 		}
 
-		unset( $this->attrs );
+		unset( $this->{$param} );
 		return $this;
 	}
 
@@ -152,6 +156,6 @@ class Base {
 		}
 
 		// Parse dot notation.
-		return MBBParser\array_unflatten( $array );
+		return \MBBParser\array_unflatten( $array );
 	}
 }
