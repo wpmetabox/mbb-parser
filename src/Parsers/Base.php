@@ -1,6 +1,7 @@
 <?php
 namespace MBBParser\Parsers;
 
+use MBBParser;
 use MBBParser\SettingsTrait;
 
 class Base {
@@ -151,6 +152,6 @@ class Base {
 		}
 
 		// Parse dot notation.
-		return array_unflatten( $array );
+		return MBBParser\array_unflatten( $array );
 	}
 }
