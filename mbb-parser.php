@@ -1,10 +1,11 @@
 <?php
 /**
- * Plugin Name:     MBB Parser
- * Plugin URI:      https://metabox.io
- * Description:     Parser meta box settings from JSON
- * Author:          MetaBox.io
- * Author URI:      https://metabox.io
+ * Plugin Name: MBB Parser
+ * Plugin URI:  https: //metabox.io
+ * Description: Parses meta box settings from JSON.
+ * Version:     1.0.0
+ * Author:      MetaBox.io
+ * Author URI:  https: //metabox.io
  */
 
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
