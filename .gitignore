@@ -3,3 +3,4 @@ Thumbs.db
 node_modules/
 *.zip
 composer.lock
+vendor
