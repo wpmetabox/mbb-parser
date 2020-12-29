@@ -3,7 +3,7 @@
  * Plugin Name: MBB Parser
  * Plugin URI:  https: //metabox.io
  * Description: Parses meta box settings from JSON.
- * Version:     1.0.0
+ * Version:     1.0.2
  * Author:      MetaBox.io
  * Author URI:  https: //metabox.io
  */
