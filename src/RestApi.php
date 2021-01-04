@@ -15,7 +15,7 @@ class RestApi {
 	}
 
 	public function generate_code( $request ) {
-		$parser = new Parsers\MetaBox( $request->get_json_params() );
+		$parser = new Parsers\MetaBox( $request->get_params() );
 		$parser->parse();
 
 		$settings = $parser->get_settings();

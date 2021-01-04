@@ -47,8 +47,8 @@ class Field {
 	}
 
 	private function make_translatable( $name ) {
-		if ( ! empty( $this->{$name} ) && is_string( $this->{$name} ) ) {
-			$this->{$name} = sprintf( '###%s###', $this->{$name} );
+		if ( ! empty( $this->$name ) && is_string( $this->$name ) ) {
+			$this->$name = sprintf( '###%s###', $this->$name );
 		}
 	}
 }

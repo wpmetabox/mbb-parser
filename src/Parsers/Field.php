@@ -2,33 +2,57 @@
 namespace MBBParser\Parsers;
 
 class Field extends Base {
-	protected $ignore_empty_keys = ['max_status', 'save_field'];
-	private $choice_types        = ['select', 'radio', 'checkbox_list', 'select_advanced', 'button_group', 'image_select', 'autocomplete'];
+	protected $empty_keys = ['save_field'];
+	protected $non_empty_keys = [
+		'button_group'   => ['inline'],
+		'radio'          => ['inline'],
+		'file_advanced'  => ['max_status'],
+		'file_upload'    => ['max_status'],
+		'image_advanced' => ['max_status'],
+		'image_upload'   => ['max_status'],
+		'video'          => ['max_status'],
+	];
+	private $choice_types = ['select', 'radio', 'checkbox_list', 'select_advanced', 'button_group', 'image_select', 'autocomplete'];
 
 	public function parse() {
+		// Remove collapse/expand state.
+		unset( $this->_state );
+
+		// Remove unique ID used for tracking in JS.
+		unset( $this->_id );
+
+		// Remove default fields.
+		$this->remove_default( 'save_field', true );
+		$this->remove_default( 'add_to', 'end' ); // image_advanced.
+		$this->remove_default( 'image_size', 'thumbnail' ); // image_advanced.
+
 		$this->remove_tabs()
 			->parse_boolean_values()
 			->parse_numeric_values()
-			->remove_angular_keys()
 			->parse_datalist()
-			->parse_group_title()
 			->parse_object_field()
 			->parse_choice_options()
 			->parse_choice_std()
+			->parse_clone()
 			->parse_array_attributes( 'options' )
 			->parse_array_attributes( 'js_options' )
 			->parse_array_attributes( 'query_args' )
-			->parse_custom_attributes()
+			->parse_array_attributes( 'attributes' )
+			->parse_custom_settings()
 			->parse_conditional_logic()
-			->remove_id();
-		if ( 'button_group' !== $this->type ) {
-			$this->remove_empty_values();
+			->parse_upload_dir()
+			->remove_empty_values();
+
+		// Field-specific parser.
+		$func = "parse_field_{$this->type}";
+		if ( method_exists( $this, $func ) ) {
+			$this->$func();
 		}
 	}
 
 	private function remove_tabs() {
 		if ( 'tab' === $this->type ) {
-			$this->settings = array();
+			$this->settings = [];
 		}
 		return $this;
 	}
@@ -42,14 +66,6 @@ class Field extends Base {
 			'options' => explode( "\n", $this->settings['datalist_choices'] ),
 		];
 		unset( $this->settings['datalist_choices'] );
-		return $this;
-	}
-
-	private function parse_group_title() {
-		if ( 'group' !== $this->type ) {
-			return $this;
-		}
-		unset( $this->groupfield );
 		return $this;
 	}
 
@@ -127,9 +143,48 @@ class Field extends Base {
 		return $this;
 	}
 
-	private function remove_id() {
-		if ( in_array( $this->type, ['divider', 'heading'] ) ) {
-			unset( $this->id );
+	private function parse_clone() {
+		if ( $this->clone ) {
+			return $this;
+		}
+		$keys = ['sort_clone', 'clone_default', 'clone_as_multiple', 'max_clone', 'add_button'];
+		foreach ( $keys as $key ) {
+			unset( $this->$key );
+		}
+		return $this;
+	}
+
+	private function parse_upload_dir() {
+		if ( $this->upload_dir ) {
+			$this->upload_dir = trailingslashit( ABSPATH ) . untrailingslashit( $this->upload_dir );
+		}
+		return $this;
+	}
+
+	private function parse_field_key_value() {
+		$placeholder = [];
+		if ( $this->placeholder_key ) {
+			$placeholder['key'] = $this->placeholder_key;
+		}
+		if ( $this->placeholder_value ) {
+			$placeholder['value'] = $this->placeholder_value;
+		}
+		$placeholder = array_filter( $placeholder );
+		if ( $placeholder ) {
+			$this->placeholder = $placeholder;
+		}
+		unset( $this->placeholder_key, $this->placeholder_value );
+		return $this;
+	}
+
+	private function parse_field_group() {
+		$this->remove_default( 'default_state', 'expanded' );
+		if ( $this->collapsible ) {
+			return $this;
+		}
+		$keys = ['default_state', 'save_state', 'group_title'];
+		foreach ( $keys as $key ) {
+			unset( $this->$key );
 		}
 		return $this;
 	}
