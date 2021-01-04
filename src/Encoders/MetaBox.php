@@ -9,13 +9,15 @@ class MetaBox {
 
 	private $text_domain;
 	private $prefix;
-	private $function_name = 'your_prefix_register_meta_boxes';
+	private $function_name;
+	private $encoded_string;
 
 	public function __construct( $settings ) {
-		$this->text_domain = $settings['text_domain'] ?? 'text-domain';
-		$this->prefix      = $settings['prefix'] ?? '';
+		$this->prefix        = $settings['prefix'] ?? '';
+		$this->text_domain   = $settings['text_domain'] ?? 'your-text-domain';
+		$this->function_name = $settings['function_name'] ?? 'your_prefix_register_meta_boxes';
 
-		unset( $settings['text_domain'], $settings['prefix'] );
+		unset( $settings['text_domain'], $settings['prefix'], $settings['function_name'] );
 		$this->settings = $settings;
 	}
 
@@ -24,13 +26,11 @@ class MetaBox {
 	}
 
 	public function encode() {
-		$this->make_translatable( 'title' );
-
 		if ( isset( $this->settings['fields'] ) && is_array( $this->settings['fields'] ) ) {
 			$this->encode_fields( $this->settings['fields'] );
 		}
 
-		$encoder = new PHPEncoder();
+		$encoder = new PHPEncoder;
 		$this->encoded_string = $encoder->encode( $this->settings, [
 			'array.base'  => 4,
 			'array.align' => true,
@@ -44,7 +44,7 @@ class MetaBox {
 
 	private function encode_fields( &$fields ) {
 		array_walk( $fields, array( $this, 'encode_field' ) );
-		$fields = array_filter( $fields ); // Make sure to remove empty (such as empty groups) or "tab" fields.
+		$fields = array_values( array_filter( $fields ) ); // Make sure to remove empty (such as empty groups) or "tab" fields.
 	}
 
 	private function encode_field( &$field ) {
@@ -54,12 +54,6 @@ class MetaBox {
 
 		if ( isset( $field['fields'] ) ) {
 			$this->encode_fields( $field['fields'] );
-		}
-	}
-
-	private function make_translatable( $name ) {
-		if ( ! empty( $this->{$name} ) ) {
-			$this->{$name} = sprintf( '###%s###', $this->{$name} );
 		}
 	}
 

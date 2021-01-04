@@ -3,15 +3,14 @@ namespace MBBParser\Parsers;
 
 use MBBParser\Arr;
 use MBBParser\SettingsTrait;
+use RWMB_Helpers_Array;
 
 class Base {
 	use SettingsTrait;
 
-	protected $ignore_empty_keys = [];
+	protected $empty_keys = [];
+	protected $non_empty_keys = [];
 
-	/**
-	 * Do not allow to create new instance via traditional constructor.
-	 */
 	public function __construct( $settings ) {
 		$this->settings = (array) $settings;
 	}
@@ -38,24 +37,26 @@ class Base {
 		}
 	}
 
-	protected function remove_angular_keys() {
-		unset( $this->settings['$$hashKey'] );
-		return $this;
-	}
-
 	protected function remove_empty_values() {
+		$non_empty = $this->type && isset( $this->non_empty_keys[ $this->type ] ) ? $this->non_empty_keys[ $this->type ] : [];
+
 		foreach ( $this->settings as $key => $value ) {
-			if ( empty( $value ) && ! in_array( $key, $this->ignore_empty_keys, true ) ) {
+			if ( empty( $value ) && ! in_array( $key, $this->empty_keys ) && ! in_array( $key, $non_empty ) ) {
 				unset( $this->settings[ $key ] );
 			}
 		}
+		foreach ( $non_empty as $key ) {
+			$this->remove_default( $key, true );
+		}
+
 		return $this;
 	}
 
 	protected function parse_array_attributes( $key ) {
 		// Make sure we're processing 2-dimentional array [[key, value], [key, value]].
-		$value = $this->{$key};
+		$value = $this->$key;
 		if ( ! is_array( $value ) ) {
+			$this->$key = [];
 			return $this;
 		}
 		$first = reset( $value );
@@ -93,56 +94,46 @@ class Base {
 		return $this;
 	}
 
-	protected function parse_custom_attributes() {
-		if ( isset( $this->attributes ) ) {
-			$param = 'attributes';
-		} elseif ( isset( $this->attrs ) ) {
-			$param = 'attrs';
-		} else {
+	protected function parse_custom_settings() {
+		if ( ! isset( $this->custom_settings ) ) {
 			return $this;
 		}
 
-		$this->parse_array_attributes( $param );
-		foreach ( $this->{$param} as $key => $value ) {
-			$this->{$key} = $value;
+		$this->parse_array_attributes( 'custom_settings' );
+		foreach ( $this->custom_settings as $key => $value ) {
+			$this->$key = $value;
 		}
 
-		unset( $this->{$param} );
+		unset( $this->custom_settings );
 		return $this;
 	}
 
 	protected function parse_conditional_logic() {
-		if ( empty( $this->logic ) ) {
+		if ( empty( $this->conditional_logic ) ) {
 			return $this;
 		}
 
-		$logic = $this->logic;
-
-		$visibility = 'visible' === $logic['visibility'] ? 'visible' : 'hidden';
-		$relation   = 'and' === $logic['relation'] ? 'and' : 'or';
-
-		foreach ( $logic['when'] as $index => $condition ) {
-			if ( empty( $condition[0] ) ) {
-				unset( $logic['when'][ $index ] );
+		$data = $this->conditional_logic;
+		foreach ( $data['when'] as &$condition ) {
+			// Allow to set array as CSV.
+			if ( false !== strpos( $condition['value'], ',' ) ) {
+				$condition['value'] = RWMB_Helpers_Array::from_csv( $condition['value'] );
 			}
-
-			if ( ! isset( $condition[2] ) || is_null( $condition[2] ) ) {
-				$condition[2] = '';
-			}
-
-			if ( strpos( $condition[2], ',' ) !== false ) {
-				$logic['when'][ $index ][2] = array_map( 'trim', explode( ',', $condition[2] ) );
-			}
+			$condition = [
+				$condition['name'],
+				$condition['operator'],
+				$condition['value'],
+			];
 		}
 
-		if ( ! empty( $logic['when'] ) ) {
-			$this->{$visibility} = array(
-				'when'     => $logic['when'],
-				'relation' => $relation,
+		if ( ! empty( $data['when'] ) ) {
+			$this->{$data['type']} = array(
+				'when'     => array_values( $data['when'] ),
+				'relation' => $data['relation'],
 			);
 		}
 
-		unset( $this->logic );
+		unset( $this->conditional_logic );
 
 		return $this;
 	}
@@ -158,5 +149,11 @@ class Base {
 
 		// Parse dot notation.
 		return Arr::unflatten( $array );
+	}
+
+	protected function remove_default( $key, $value ) {
+		if ( $this->$key === $value ) {
+			unset( $this->$key );
+		}
 	}
 }
