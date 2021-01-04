@@ -28,16 +28,19 @@ class MetaBox extends Base {
 	}
 
 	private function parse_settings() {
-		$settings = isset( $this->settings['settings'] ) ? $this->settings['settings'] : [];
+		$settings = [
+			'title' => $this->post_title,
+			'id' => $this->post_name,
+			'prefix' => $this->prefix,
+			'text_domain' => $this->text_domain,
+			'function_name' => $this->function_name,
+		];
+
+		if ( isset( $this->settings['settings'] ) ) {
+			$settings = array_merge( $settings, $this->settings['settings'] );
+		}
+
 		$this->settings_parser = new Settings( $settings );
-
-		// Set missing parameter.
-		$this->settings_parser->title = $this->post_title;
-		$this->settings_parser->id = $this->post_name;
-		$this->settings_parser->prefix = $this->prefix;
-		$this->settings_parser->text_domain = $this->text_domain;
-		$this->settings_parser->function_name = $this->function_name;
-
 		$this->settings_parser->parse();
 	}
 
