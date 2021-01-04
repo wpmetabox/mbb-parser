@@ -26,6 +26,8 @@ class MetaBox {
 	}
 
 	public function encode() {
+		$this->make_translatable( 'title' );
+
 		if ( isset( $this->settings['fields'] ) && is_array( $this->settings['fields'] ) ) {
 			$this->encode_fields( $this->settings['fields'] );
 		}
@@ -40,6 +42,12 @@ class MetaBox {
 		$this->replace_get_text_function()
 			->replace_field_id_prefix()
 			->wrap_function_call();
+	}
+
+	private function make_translatable( $name ) {
+		if ( ! empty( $this->{$name} ) ) {
+			$this->{$name} = sprintf( '###%s###', $this->{$name} );
+		}
 	}
 
 	private function encode_fields( &$fields ) {
