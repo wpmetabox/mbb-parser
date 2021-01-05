@@ -25,14 +25,16 @@ class MetaBox extends Base {
 
 		$settings = $this->settings_parser->get_settings();
 		$this->settings = array_merge( $settings, [ 'fields' => $this->fields ] );
+
+		$this->settings = apply_filters( 'mbb_parsed_meta_box', $this->settings );
 	}
 
 	private function parse_settings() {
 		$settings = [
-			'title' => $this->post_title,
-			'id' => $this->post_name,
-			'prefix' => $this->prefix,
-			'text_domain' => $this->text_domain,
+			'title'         => $this->post_title,
+			'id'            => $this->post_name,
+			'prefix'        => $this->prefix,
+			'text_domain'   => $this->text_domain,
 			'function_name' => $this->function_name,
 		];
 

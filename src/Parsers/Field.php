@@ -48,6 +48,9 @@ class Field extends Base {
 		if ( method_exists( $this, $func ) ) {
 			$this->$func();
 		}
+
+		$this->settings = apply_filters( 'mbb_parsed_field', $this->settings );
+		$this->settings = apply_filters( "mbb_parsed_field_{$this->type}", $this->settings );
 	}
 
 	private function remove_tabs() {
