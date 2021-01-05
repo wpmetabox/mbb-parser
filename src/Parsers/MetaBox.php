@@ -31,10 +31,8 @@ class MetaBox extends Base {
 
 	private function parse_settings() {
 		$settings = [
-			'title'         => $this->post_title,
-			'id'            => $this->post_name,
-			'text_domain'   => $this->text_domain,
-			'function_name' => $this->function_name,
+			'title' => $this->post_title,
+			'id'    => $this->post_name,
 		];
 
 		if ( isset( $this->settings['settings'] ) ) {

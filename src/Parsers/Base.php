@@ -11,11 +11,15 @@ class Base {
 	protected $empty_keys = [];
 	protected $non_empty_keys = [];
 
-	public function __construct( $settings ) {
+	public function __construct( $settings = [] ) {
 		$this->settings = (array) $settings;
 	}
 
-	protected function parse_boolean_values() {
+	public function set_settings( $settings ) {
+		$this->settings = (array) $settings;
+	}
+
+	public function parse_boolean_values() {
 		array_walk_recursive( $this->settings, array( $this, 'convert_string_to_boolean' ) );
 		return $this;
 	}
@@ -26,7 +30,7 @@ class Base {
 		}
 	}
 
-	protected function parse_numeric_values() {
+	public function parse_numeric_values() {
 		array_walk_recursive( $this->settings, array( $this, 'convert_string_to_number' ) );
 		return $this;
 	}
