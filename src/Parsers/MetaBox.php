@@ -33,7 +33,6 @@ class MetaBox extends Base {
 		$settings = [
 			'title'         => $this->post_title,
 			'id'            => $this->post_name,
-			'prefix'        => $this->prefix,
 			'text_domain'   => $this->text_domain,
 			'function_name' => $this->function_name,
 		];
