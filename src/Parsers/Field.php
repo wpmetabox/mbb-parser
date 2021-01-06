@@ -22,11 +22,9 @@ class Field extends Base {
 		unset( $this->_id );
 
 		// Remove default fields.
-		$this->remove_default( 'save_field', true );
-		$this->remove_default( 'add_to', 'end' ); // image_advanced.
-		$this->remove_default( 'image_size', 'thumbnail' ); // image_advanced.
-
-		$this->remove_tabs()
+		$this->remove_default( 'save_field', true )
+			->remove_default( 'add_to', 'end' ) // image_advanced.
+			->remove_default( 'image_size', 'thumbnail' ) // image_advanced.
 			->parse_boolean_values()
 			->parse_numeric_values()
 			->parse_datalist()
@@ -51,13 +49,6 @@ class Field extends Base {
 
 		$this->settings = apply_filters( 'mbb_field_settings', $this->settings );
 		$this->settings = apply_filters( "mbb_field_settings_{$this->type}", $this->settings );
-	}
-
-	private function remove_tabs() {
-		if ( 'tab' === $this->type ) {
-			$this->settings = [];
-		}
-		return $this;
 	}
 
 	private function parse_datalist() {

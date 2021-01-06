@@ -14,8 +14,6 @@ class MetaBox extends Base {
 
 		$this->parse_boolean_values()
 			->parse_numeric_values()
-			->parse_tabs()
-			->set_fields_tab()
 			->parse_fields( $this->settings['fields'] );
 
 		$this->remove_empty_values();
@@ -26,7 +24,7 @@ class MetaBox extends Base {
 		$settings = $this->settings_parser->get_settings();
 		$this->settings = array_merge( $settings, [ 'fields' => $this->fields ] );
 
-		$this->settings = apply_filters( 'mbb_parsed_meta_box', $this->settings );
+		$this->settings = apply_filters( 'mbb_meta_box_settings', $this->settings );
 	}
 
 	private function parse_settings() {
@@ -41,45 +39,6 @@ class MetaBox extends Base {
 
 		$this->settings_parser = new Settings( $settings );
 		$this->settings_parser->parse();
-	}
-
-	private function parse_tabs() {
-		$this->tabs = [];
-		foreach ( $this->fields as $field ) {
-			if ( empty( $field['type'] ) || 'tab' !== $field['type'] ) {
-				continue;
-			}
-
-			$label = isset( $field['name'] ) ? $field['name'] : '';
-			$icon  = isset( $field['icon'] ) ? $field['icon'] : '';
-
-			$this->settings['tabs'][ $field['id'] ] = compact( 'label', 'icon' );
-		}
-
-		if ( empty( $this->tabs ) ) {
-			unset( $this->settings_parser->tab_style );
-			unset( $this->settings_parser->tab_wrapper );
-		}
-
-		return $this;
-	}
-
-	private function set_fields_tab() {
-		$tab = isset( $this->settings['fields'][0]['type'] ) ? $this->settings['fields'][0]['type'] : null;
-		if ( 'tab' !== $tab ) {
-			return $this;
-		}
-
-		$previous_tab = null;
-		foreach ( $this->settings['fields'] as $index => $field ) {
-			if ( 'tab' === $field['type'] ) {
-				$previous_tab = $field['id'];
-			} else {
-				$this->settings['fields'][ $index ]['tab'] = $previous_tab;
-			}
-		}
-
-		return $this;
 	}
 
 	private function parse_fields( &$fields ) {

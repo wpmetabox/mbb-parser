@@ -6,7 +6,8 @@ use MBBParser\Arr;
 
 class Settings extends Base {
 	public function parse() {
-		$this->parse_boolean_values()
+		$this->remove_default( 'context', 'advanced' )
+			->parse_boolean_values()
 			->parse_numeric_values()
 			->parse_location()
 			->parse_location_rules( 'show_hide' )
@@ -14,9 +15,9 @@ class Settings extends Base {
 			->parse_conditional_logic()
 			->parse_custom_table()
 			->parse_block()
-			->parse_custom_settings();
+			->parse_custom_settings()
+			->remove_empty_values();
 
-		$this->remove_empty_values();
 		unset( $this->object_type );
 	}
 

@@ -160,5 +160,6 @@ class Base {
 		if ( $this->$key === $value ) {
 			unset( $this->$key );
 		}
+		return $this;
 	}
 }
