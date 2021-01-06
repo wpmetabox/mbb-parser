@@ -17,6 +17,7 @@ class Base {
 
 	public function set_settings( $settings ) {
 		$this->settings = (array) $settings;
+		return $this;
 	}
 
 	public function parse_boolean_values() {
