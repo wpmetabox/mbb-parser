@@ -28,7 +28,7 @@ class Field {
 			return;
 		}
 		$this->id = substr( $this->id, strlen( $this->id_prefix ) );
-		$this->id = '{{ prefix }}' . $this->id;
+		$this->id = '{prefix}' . $this->id;
 	}
 
 	private function make_options_translatable() {
@@ -41,14 +41,14 @@ class Field {
 		}
 		$options = $this->options;
 		foreach ( $options as &$label ) {
-			$label = sprintf( '###%s###', $label );
+			$label = sprintf( '{translate}%s{/translate}', $label );
 		}
 		$this->options = $options;
 	}
 
 	private function make_translatable( $name ) {
 		if ( ! empty( $this->$name ) && is_string( $this->$name ) ) {
-			$this->$name = sprintf( '###%s###', $this->$name );
+			$this->$name = sprintf( '{translate}%s{/translate}', $this->$name );
 		}
 	}
 }

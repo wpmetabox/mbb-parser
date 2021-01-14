@@ -39,14 +39,12 @@ class MetaBox {
 			'string.escape' => false,
 		] );
 
-		$this->replace_get_text_function()
-			->replace_field_id_prefix()
-			->wrap_function_call();
+		$this->replace_placeholders()->wrap_function_call();
 	}
 
 	private function make_translatable( $name ) {
 		if ( ! empty( $this->{$name} ) ) {
-			$this->{$name} = sprintf( '###%s###', $this->{$name} );
+			$this->$name = sprintf( '{translate}%s{/translate}', $this->$name );
 		}
 	}
 
@@ -65,16 +63,16 @@ class MetaBox {
 		}
 	}
 
-	private function replace_get_text_function() {
-		$find    = "/'###(.*)###'/";
-		$replace = "esc_html__( '$1', '" . $this->text_domain . "' )";
+	private function replace_placeholders() {
+		// Translate.
+		$this->encoded_string = preg_replace( "!'{translate}(.*){/translate}'!", "esc_html__( '$1', '" . $this->text_domain . "' )", $this->encoded_string );
 
-		$this->encoded_string = preg_replace( $find, $replace, $this->encoded_string );
-		return $this;
-	}
+		// Raw code.
+		$this->encoded_string = preg_replace( "!'{raw}(.*){/raw}'!", '$1', $this->encoded_string );
 
-	private function replace_field_id_prefix() {
-		$this->encoded_string = str_replace( '\'{{ prefix }}', '$prefix . \'', $this->encoded_string );
+		// Field ID prefix.
+		$this->encoded_string = str_replace( '\'{prefix}', '$prefix . \'', $this->encoded_string );
+
 		return $this;
 	}
 
