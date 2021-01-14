@@ -36,6 +36,13 @@ class Field {
 		if ( ! in_array( $this->type, $choice_types ) ) {
 			return;
 		}
+
+		if ( $this->_callback ) {
+			$this->options = "{raw}{$this->_callback}(){/raw}";
+			unset( $this->_callback );
+			return;
+		}
+
 		if ( empty( $this->options ) || ! is_array( $this->options ) ) {
 			return;
 		}

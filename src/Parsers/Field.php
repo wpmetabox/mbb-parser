@@ -49,6 +49,8 @@ class Field extends Base {
 
 		$this->settings = apply_filters( 'mbb_field_settings', $this->settings );
 		$this->settings = apply_filters( "mbb_field_settings_{$this->type}", $this->settings );
+
+		ray( $this->settings );
 	}
 
 	private function parse_datalist() {
@@ -102,6 +104,17 @@ class Field extends Base {
 		if ( empty( $this->options ) || is_array( $this->options ) ) {
 			return $this;
 		}
+
+		// Use callback: function_name format.
+		if ( is_string( $this->options ) && 0 === strpos( $this->options, 'callback:' ) ) {
+			$callback = trim( str_replace( 'callback:', '', $this->options ) );
+			if ( is_callable( $callback ) ) {
+				$this->options = call_user_func( $callback );
+				$this->_callback = $callback; // For using in the encoders.
+			}
+			return $this;
+		}
+
 		$options = array();
 
 		$this->options = trim( wp_unslash( $this->options ) );
