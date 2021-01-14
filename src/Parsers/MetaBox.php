@@ -1,9 +1,15 @@
 <?php
 namespace MBBParser\Parsers;
 
+use RWMB_Helpers_Array;
+
 class MetaBox extends Base {
 	protected $empty_keys = ['fields'];
 	private $settings_parser;
+	private $validation = [
+		'rules'    => [],
+		'messages' => [],
+	];
 
 	public function parse() {
 		$this->parse_settings();
@@ -23,6 +29,12 @@ class MetaBox extends Base {
 
 		$settings = $this->settings_parser->get_settings();
 		$this->settings = array_merge( $settings, [ 'fields' => $this->fields ] );
+		if ( $this->validation['rules'] ) {
+			if ( empty( $this->validation['messages'] ) ) {
+				unset( $this->validation['messages'] );
+			}
+			$this->settings['validation'] = $this->validation;
+		}
 
 		$this->settings = apply_filters( 'mbb_meta_box_settings', $this->settings );
 	}
@@ -55,8 +67,46 @@ class MetaBox extends Base {
 			$field['id'] = $this->prefix . $field['id'];
 		}
 
+		$this->parse_field_validation( $field );
+
 		if ( isset( $field['fields'] ) ) {
 			$this->parse_fields( $field['fields'] );
 		}
+	}
+
+	private function parse_field_validation( &$field ) {
+		if ( empty( $field['validation'] ) ) {
+			return;
+		}
+
+		$rules    = &$this->validation['rules'];
+		$messages = &$this->validation['messages'];
+
+		$key              = $field['id'];
+		$rules[ $key ]    = [];
+		$messages[ $key ] = [];
+
+		foreach ( $field['validation'] as $rule ) {
+			$name  = $rule['name'];
+			$value = $rule['value'];
+			if ( in_array( $name, ['rangelength', 'range'], true ) ) {
+				$value = array_map( 'intval', RWMB_Helpers_Array::from_csv( $value ) );
+			}
+
+			$rules[ $key ][ $name ]    = $value;
+			if ( ! empty( $rule['message'] ) ) {
+				$messages[ $key ][ $name ] = $rule['message'];
+			}
+		}
+
+		if ( empty( $rules[ $key ] ) ) {
+			unset( $rules[ $key ] );
+			unset( $messages[ $key ] );
+		}
+		if ( empty( $messages[ $key ] ) ) {
+			unset( $messages[ $key ] );
+		}
+
+		unset( $field['validation'] );
 	}
 }
