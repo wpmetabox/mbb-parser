@@ -54,7 +54,7 @@ class MetaBox {
 	}
 
 	private function encode_field( &$field ) {
-		$encoder = new Field( $field, $this->text_domain, $this->prefix );
+		$encoder = new Field( $field, $this->prefix );
 		$encoder->encode();
 		$field = $encoder->get_settings();
 

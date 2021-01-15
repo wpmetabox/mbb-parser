@@ -6,12 +6,10 @@ use MBBParser\SettingsTrait;
 class Field {
 	use SettingsTrait;
 
-	private $text_domain;
 	private $id_prefix;
 
-	public function __construct( $settings, $text_domain, $id_prefix ) {
+	public function __construct( $settings, $id_prefix ) {
 		$this->settings    = $settings;
-		$this->text_domain = $text_domain;
 		$this->id_prefix   = $id_prefix;
 	}
 
