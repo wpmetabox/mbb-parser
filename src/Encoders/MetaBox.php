@@ -27,6 +27,7 @@ class MetaBox {
 
 	public function encode() {
 		$this->make_translatable( 'title' );
+		$this->add_prefix_to_validation();
 
 		if ( isset( $this->settings['fields'] ) && is_array( $this->settings['fields'] ) ) {
 			$this->encode_fields( $this->settings['fields'] );
@@ -46,6 +47,29 @@ class MetaBox {
 		if ( ! empty( $this->{$name} ) ) {
 			$this->$name = sprintf( '{translate}%s{/translate}', $this->$name );
 		}
+	}
+
+	private function add_prefix_to_validation() {
+		if ( empty( $this->validation ) ) {
+			return;
+		}
+		$validation = [
+			'rules' => [],
+		];
+		if ( ! empty( $this->validation['messages'] ) ) {
+			$validation['messages'] = [];
+		}
+		foreach ( $this->validation['rules'] as $key => $value ) {
+			$new_key = substr( $key, strlen( $this->id_prefix ) );
+			$new_key = '{prefix}' . $new_key;
+
+			$validation['rules'][ $new_key ] = $value;
+
+			if ( isset( $this->validation['messages'] ) && isset( $this->validation['messages'][ $key ] ) ) {
+				$validation['messages'][ $new_key ] = $this->validation['messages'][ $key ];
+			}
+		}
+		$this->validation = $validation;
 	}
 
 	private function encode_fields( &$fields ) {
