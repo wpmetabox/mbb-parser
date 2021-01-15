@@ -49,8 +49,6 @@ class Field extends Base {
 
 		$this->settings = apply_filters( 'mbb_field_settings', $this->settings );
 		$this->settings = apply_filters( "mbb_field_settings_{$this->type}", $this->settings );
-
-		ray( $this->settings );
 	}
 
 	private function parse_datalist() {

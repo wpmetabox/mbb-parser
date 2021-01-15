@@ -63,8 +63,8 @@ class MetaBox extends Base {
 		$parser->parse();
 		$field = $parser->get_settings();
 
-		if ( $this->prefix && isset( $field['id'] ) ) {
-			$field['id'] = $this->prefix . $field['id'];
+		if ( $this->settings_parser->prefix && isset( $field['id'] ) ) {
+			$field['id'] = $this->settings_parser->prefix . $field['id'];
 		}
 
 		$this->parse_field_validation( $field );
@@ -82,7 +82,10 @@ class MetaBox extends Base {
 		$rules    = &$this->validation['rules'];
 		$messages = &$this->validation['messages'];
 
-		$key              = $field['id'];
+		$key = $field['id'];
+		$key = substr( $key, strlen( $this->settings_parser->prefix ) );
+		$key = '{prefix}' . $key;
+
 		$rules[ $key ]    = [];
 		$messages[ $key ] = [];
 
