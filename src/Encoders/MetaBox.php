@@ -65,7 +65,7 @@ class MetaBox {
 
 	private function replace_placeholders() {
 		// Translate.
-		$this->encoded_string = preg_replace( "!'{translate}(.*){/translate}'!", "esc_html__( '$1', '" . $this->text_domain . "' )", $this->encoded_string );
+		$this->encoded_string = preg_replace( "!'{translate}(.*){/translate}'!", "__( '$1', '" . $this->text_domain . "' )", $this->encoded_string );
 
 		// Raw code.
 		$this->encoded_string = preg_replace( "!'{raw}(.*){/raw}'!", '$1', $this->encoded_string );
