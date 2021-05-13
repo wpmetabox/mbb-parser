@@ -1,9 +1,8 @@
 <?php
 namespace MBBParser\Parsers;
 
-use MBBParser\Arr;
 use MBBParser\SettingsTrait;
-use RWMB_Helpers_Array;
+use MetaBox\Support\Arr;
 
 class Base {
 	use SettingsTrait;
@@ -128,7 +127,7 @@ class Base {
 		foreach ( $data['when'] as &$condition ) {
 			// Allow to set array as CSV.
 			if ( false !== strpos( $condition['value'], ',' ) ) {
-				$condition['value'] = RWMB_Helpers_Array::from_csv( $condition['value'] );
+				$condition['value'] = Arr::from_csv( $condition['value'] );
 			}
 			if ( empty( $condition['name'] ) || empty( $condition['value'] ) ) {
 				$condition = null;
