@@ -130,12 +130,17 @@ class Base {
 			if ( false !== strpos( $condition['value'], ',' ) ) {
 				$condition['value'] = RWMB_Helpers_Array::from_csv( $condition['value'] );
 			}
+			if ( empty( $condition['name'] ) || empty( $condition['value'] ) ) {
+				$condition = null;
+				continue;
+			}
 			$condition = [
 				$condition['name'],
 				$condition['operator'],
 				$condition['value'],
 			];
 		}
+		$data['when'] = array_filter( $data['when'] );
 
 		if ( ! empty( $data['when'] ) ) {
 			$this->{$data['type']} = array(
