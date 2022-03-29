@@ -23,12 +23,13 @@ class Base {
 		return $this;
 	}
 
-	protected function convert_string_to_boolean( &$value ) {
+	protected function convert_string_to_boolean( $value ) {
 		if ( $value === 'true' ) {
 			$value = true;
 		} elseif ( $value === 'false' ) {
 			$value = false;
 		}
+		return $value;
 	}
 
 	public function parse_numeric_values() {
