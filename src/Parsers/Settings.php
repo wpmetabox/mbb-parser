@@ -24,7 +24,7 @@ class Settings extends Base {
 	}
 
 	private function parse_location() {
-		$object_type = $this->object_type ? $this->object_type : 'post';
+		$object_type = $this->object_type ?: 'post';
 
 		if ( in_array( $object_type, [ 'user', 'comment', 'block' ], true ) ) {
 			unset( $this->$object_type );
@@ -36,6 +36,8 @@ class Settings extends Base {
 			$this->remove_default( 'priority', 'high' );
 			$this->remove_default( 'style', 'default' );
 			$this->remove_default( 'position', 'normal' );
+
+			$this->post_types = array_filter( $this->post_types );
 		}
 
 		return $this;
