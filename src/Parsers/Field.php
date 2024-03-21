@@ -42,6 +42,7 @@ class Field extends Base {
 			->parse_array_attributes( 'attributes' )
 			->parse_custom_settings()
 			->parse_conditional_logic()
+			->parse_text_limiter()
 			->parse_upload_dir()
 			->remove_empty_values()
 			->parse_default_true();

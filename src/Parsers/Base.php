@@ -156,6 +156,21 @@ class Base {
 		return $this;
 	}
 
+	protected function parse_text_limiter() {
+		if ( ! isset( $this->text_limiter ) ) {
+			return $this;
+		}
+
+		$this->parse_array_attributes( 'text_limiter' );
+		foreach ( $this->text_limiter as $key => $value ) {
+			$this->$key = $value;
+		}
+
+		unset( $this->text_limiter );
+		return $this;
+	}
+
+
 	protected function parse_json_dot_notations( $array ) {
 		// Parse JSON notation.
 		foreach ( $array as &$value ) {
