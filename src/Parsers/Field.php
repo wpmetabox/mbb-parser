@@ -40,9 +40,9 @@ class Field extends Base {
 			->parse_array_attributes( 'js_options' )
 			->parse_array_attributes( 'query_args' )
 			->parse_array_attributes( 'attributes' )
+			->parse_text_limiter()
 			->parse_custom_settings()
 			->parse_conditional_logic()
-			->parse_text_limiter()
 			->parse_upload_dir()
 			->remove_empty_values()
 			->parse_default_true();
@@ -222,6 +222,25 @@ class Field extends Base {
 		foreach ( $keys as $key ) {
 			unset( $this->$key );
 		}
+		return $this;
+	}
+
+
+	private function parse_text_limiter() {
+		if ( ! isset( $this->text_limiter ) ) {
+			return $this;
+		}
+
+		$this->parse_array_attributes( 'text_limiter' );
+
+		foreach ( $this->text_limiter as $key => $value ) {
+			if ( ! in_array( $key, [ 'limit', 'limit_type' ], true ) ) {
+				continue;
+			}
+			$this->$key = $value;
+		}
+
+		unset( $this->text_limiter );
 		return $this;
 	}
 }
