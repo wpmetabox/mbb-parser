@@ -225,18 +225,13 @@ class Field extends Base {
 		return $this;
 	}
 
-
 	private function parse_text_limiter() {
 		if ( ! isset( $this->text_limiter ) ) {
 			return $this;
 		}
 
-		$this->parse_array_attributes( 'text_limiter' );
-
-		foreach ( $this->text_limiter as $key => $value ) {
-			if ( ! in_array( $key, [ 'limit', 'limit_type' ], true ) ) {
-				continue;
-			}
+		$data = array_intersect_key( $this->text_limiter, [ 'limit' => '', 'limit_type' => '' ] );
+		foreach ( $data as $key => $value ) {
 			$this->$key = $value;
 		}
 
