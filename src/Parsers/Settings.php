@@ -165,7 +165,11 @@ class Settings extends Base {
 		return $this;
 	}
 
-	private function replace_variables( $string ) {
+	public function replace_variables( $string ) {
+		if ( empty( $string ) ) {
+			return $string;
+		}
+		
 		return strtr( $string, [
 			'{{ site.path }}'  => wp_normalize_path( ABSPATH ),
 			'{{ site.url }}'   => untrailingslashit( home_url( '/' ) ),
