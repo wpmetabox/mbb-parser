@@ -59,7 +59,7 @@ class Field {
 		}
 		$admin_columns = $this->admin_columns;
 		foreach ( $admin_columns as $key => &$label ) {
-			if ( $key === 'title' || $key === 'before' || $key === 'after' ) {
+			if ( in_array( $key, [ 'title', 'before', 'after' ], true ) ) {
 				$label = sprintf( '{translate}%s{/translate}', $label );
 			}
 		}
