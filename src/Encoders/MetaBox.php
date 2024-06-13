@@ -60,13 +60,22 @@ class MetaBox {
 			$validation['messages'] = [];
 		}
 		foreach ( $this->validation['rules'] as $key => $value ) {
+			foreach ( $value as $key_rule => $rule ) {
+				if ( in_array( $key_rule, [ 'minlength', 'maxlength', 'min', 'max', 'step', 'accept', 'extension', 'equalTo', 'remote' ], true ) ) {
+					$value[ $key_rule ] = sprintf( '{translate}%s{/translate}', $rule );
+				}
+			}
 			$new_key = substr( $key, strlen( $this->id_prefix ) );
 			$new_key = '{prefix}' . $new_key;
 
 			$validation['rules'][ $new_key ] = $value;
 
-			if ( isset( $this->validation['messages'] ) && isset( $this->validation['messages'][ $key ] ) ) {
-				$validation['messages'][ $new_key ] = $this->validation['messages'][ $key ];
+			if ( isset( $this->validation[ 'messages' ] ) && isset( $this->validation[ 'messages' ][ $key ] ) ) {
+				$messages = $this->validation[ 'messages' ][ $key ];
+				foreach ( $messages as $key => $value ) {
+					$messages[ $key ] = sprintf( '{translate}%s{/translate}', $value );
+				}
+				$validation[ 'messages' ][ $new_key ] = $messages;
 			}
 		}
 		$this->validation = $validation;
