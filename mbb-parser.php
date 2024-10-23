@@ -8,6 +8,10 @@
  * Author URI:  https://metabox.io
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+    return;
+}
+
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
     require __DIR__ . '/vendor/autoload.php';
 }
