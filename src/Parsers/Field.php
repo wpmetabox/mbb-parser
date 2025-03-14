@@ -7,13 +7,13 @@ class Field extends Base {
 
 	// Remove if "true", set to "false" if missing.
 	protected $default_true = [ 
-		'button_group'   => [ 'inline' ],
-		'radio'          => [ 'inline' ],
-		'file_advanced'  => [ 'max_status' ],
-		'file_upload'    => [ 'max_status' ],
+		'button_group' => [ 'inline' ],
+		'radio' => [ 'inline' ],
+		'file_advanced' => [ 'max_status' ],
+		'file_upload' => [ 'max_status' ],
 		'image_advanced' => [ 'max_status' ],
-		'image_upload'   => [ 'max_status' ],
-		'video'          => [ 'max_status' ],
+		'image_upload' => [ 'max_status' ],
+		'video' => [ 'max_status' ],
 	];
 	
 	/**

@@ -49,7 +49,7 @@ class MetaBox extends Base {
 		$this->unparse_post_fields();
 		$this->unparse_modified();
 		$this->unparse_settings();
-		$this->unparse_fields( $this->settings['fields'] );
+		$this->unparse_fields();
 		$this->unparse_custom_table();
 		$this->unparse_tabs();
 		$this->unparse_validation();
@@ -60,13 +60,39 @@ class MetaBox extends Base {
 		$this->unparse_show_hide();
 	}
 
+	public function to_minimal_format() {
+		$settings = $this->get_settings();
+		$meta_key = self::TYPE_META[ $settings['post_type'] ] ?? 'meta_box';
+		$settings = array_merge( $settings, $settings[ $meta_key ] );
+
+		foreach ( $this->get_unneeded_keys() as $key ) {
+			if ( $key === '$schema' ) {
+				continue;
+			}
+
+			if ( $key === 'settings' ) {
+				if ( is_array( $settings ) && ! empty( $settings['custom_settings'] ) ) {
+					$settings = array_merge( $settings, [ 
+						'custom_settings' => $settings['custom_settings'],
+					] );
+				}
+			}
+
+			unset( $settings[ $key ] );
+		}
+
+		ksort( $settings );
+
+		return $settings;
+	}
+
 	public function unparse_schema() {
 		$schema = $this->lookup( [ '$schema' ], '' );
 		if ( ! empty( $schema ) ) {
 			return $this;
 		}
 
-		$post_type = $this->detect_post_type();
+		$post_type                 = $this->detect_post_type();
 		$this->settings['$schema'] = self::SCHEMAS[ $post_type ] ?? '';
 
 		return $this;
@@ -74,6 +100,7 @@ class MetaBox extends Base {
 
 	public function unparse_tabs() {
 		$tabs = $this->lookup( [ 'tabs', 'meta_box.tabs' ], [] );
+
 		if ( empty( $tabs ) ) {
 			return $this;
 		}
@@ -102,11 +129,18 @@ class MetaBox extends Base {
 		$this->settings['settings']['custom_settings'] = $custom_settings;
 
 		// Rebuild fields with tab fields first
-		$new_fields      = [];
+		$added_tabs      = [];
 		$original_fields = $this->settings['fields'] ?? [];
+		$new_fields      = [];
 
-		// Add tab fields first
-		foreach ( $tabs as $tab_id => $tab_data ) {
+		// Add fields under this tab
+		foreach ( $original_fields as $id => $field ) {
+			if ( ! isset( $field['tab'] ) ) {
+				$new_fields[ $id ] = $field;
+				continue;
+			}
+
+			$tab_data  = $tabs[ $field['tab'] ] ?? null;
 			$label     = is_array( $tab_data ) ? $tab_data['label'] : $tab_data;
 			$icon      = is_array( $tab_data ) ? ( $tab_data['icon'] ?? '' ) : '';
 			$icon_type = 'dashicons';
@@ -115,9 +149,10 @@ class MetaBox extends Base {
 			} elseif ( strpos( $icon, 'http' ) === 0 ) {
 				$icon_type = 'url';
 			}
-			$tab_field    = [ 
-				'id' => $tab_id,
-				'_id' => $tab_id,
+
+			$tab_field = [ 
+				'id' => $field['tab'],
+				'_id' => $field['tab'],
 				'type' => 'tab',
 				'name' => $label,
 				'icon_type' => $icon_type,
@@ -125,21 +160,13 @@ class MetaBox extends Base {
 				'icon_fa' => $icon_type === 'fontawesome' ? $icon : '',
 				'icon_url' => $icon_type === 'url' ? $icon : '',
 			];
-			$new_fields[] = $tab_field;
 
-			// Add fields under this tab
-			foreach ( $original_fields as $field ) {
-				if ( isset( $field['tab'] ) && $field['tab'] === $tab_id ) {
-					$new_fields[] = $field;
-				}
+			if ( ! in_array( $field['tab'], $added_tabs ) ) {
+				$new_fields[ $field['tab'] ] = $tab_field;
+				$added_tabs[]                = $tab_field;
 			}
-		}
 
-		// Add any non-tabbed fields
-		foreach ( $original_fields as $field ) {
-			if ( ! isset( $field['tab'] ) || ! array_key_exists( $field['tab'], $tabs ) ) {
-				$new_fields[] = $field;
-			}
+			$new_fields[ $id ] = $field;
 		}
 
 		$this->settings['fields'] = $new_fields;
@@ -150,7 +177,7 @@ class MetaBox extends Base {
 		if ( isset( $this->settings['settings']['custom_table'] ) ) {
 			return $this;
 		}
-		
+
 		$post_type = $this->detect_post_type();
 
 		if ( $post_type !== 'meta-box' ) {
@@ -181,7 +208,10 @@ class MetaBox extends Base {
 	}
 
 	public function unparse_modified() {
-		$this->settings['modified'] = $this->lookup( [ 'modified', 'settings.modified' ], 0 );
+		$this->settings['modified']             = $this->lookup( [ 'modified', 'meta_box.modified' ], 0 );
+		$this->settings['meta_box']['modified'] = $this->settings['modified'];
+
+		return $this;
 	}
 
 	public function unparse_meta_box() {
@@ -190,12 +220,15 @@ class MetaBox extends Base {
 			return $this;
 		}
 
-		// If already parsed, return
-		if ( isset( $this->meta_box ) ) {
+		if ( isset( $this->meta_box ) && is_array( $this->meta_box ) ) {
+			// Fix: error on earlier versions that saved fields as object
+			$fields                               = array_values( $this->meta_box['fields'] ?? [] );
+			$this->settings['meta_box']['fields'] = $fields;
+
 			return $this;
 		}
 
-		$meta_box       = $this->get_settings();
+		$meta_box = $this->get_settings();
 
 		foreach ( $this->get_unneeded_keys() as $key ) {
 			unset( $meta_box[ $key ] );
@@ -218,14 +251,14 @@ class MetaBox extends Base {
 			return $this;
 		}
 
-		$settings_page       = $this->get_settings();
+		$settings_page = $this->get_settings();
 
 		foreach ( $this->get_unneeded_keys() as $key ) {
 			unset( $settings_page[ $key ] );
 		}
 
 		$this->settings_page = $settings_page;
-		$this->post_title	= $this->lookup( [ 'menu_title', 'id' ]);
+		$this->post_title    = $this->lookup( [ 'menu_title', 'id' ] );
 
 		return $this;
 	}
@@ -240,13 +273,13 @@ class MetaBox extends Base {
 			return $this;
 		}
 
-		$relationship       = $this->get_settings();
+		$relationship = $this->get_settings();
 
 		foreach ( $this->get_unneeded_keys() as $key ) {
 			unset( $relationship[ $key ] );
 		}
 		$this->relationship = $relationship;
-		$this->post_title	= $this->lookup( [ 'menu_title', 'id' ]);
+		$this->post_title   = $this->lookup( [ 'menu_title', 'id' ] );
 
 		return $this;
 	}
@@ -278,8 +311,8 @@ class MetaBox extends Base {
 		];
 
 		// Merge custom settings
-		$custom_settings             = $this->lookup( [ 'custom_settings' ], [] );
-		$settings                    = array_merge( $this->lookup( [ 'settings' ], [] ), $settings );
+		$custom_settings = $this->lookup( [ 'custom_settings' ], [] );
+		$settings        = array_merge( $this->lookup( [ 'settings' ], [] ), $settings );
 
 		foreach ( $this->settings as $key => $value ) {
 			if ( in_array( $key, $this->get_unneeded_keys() ) ) {
@@ -292,7 +325,9 @@ class MetaBox extends Base {
 		unset( $settings['settings'] );
 		unset( $settings['fields'] );
 
-		$settings['custom_settings'] = $custom_settings;
+		if ( ! empty( $custom_settings ) ) {
+			$settings['custom_settings'] = $custom_settings;
+		}
 
 		$this->settings_parser = new Settings( $settings );
 		$this->settings_parser->unparse();
@@ -341,11 +376,20 @@ class MetaBox extends Base {
 		return 'meta-box';
 	}
 
-	public function unparse_fields( &$fields ) {
+	public function unparse_fields() {
+		$fields = $this->settings['meta_box']['fields'];
+
 		if ( empty( $fields ) ) {
 			return $this;
 		}
 
+		$fields                   = $this->convert_fields_for_builder( $fields );
+		$this->settings['fields'] = $fields;
+
+		return $this;
+	}
+
+	public function convert_fields_for_builder( $fields = [] ): array {
 		foreach ( $fields as $id => $field ) {
 			$unparser = new Field( $field );
 			$unparser->unparse();
@@ -353,14 +397,14 @@ class MetaBox extends Base {
 			$field = $unparser->get_settings();
 
 			if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
-				$this->unparse_fields( $field['fields'] );
+				$field['fields'] = $this->convert_fields_for_builder( $field['fields'] );
 			}
 
 			unset( $fields[ $id ] );
-			$fields[ $field['id'] ] = $field;
+			$fields[ $field['_id'] ] = $field;
 		}
 
-		return $this;
+		return $fields;
 	}
 
 	public function unparse_validation() {
@@ -492,33 +536,12 @@ class MetaBox extends Base {
 		return $this;
 	}
 
-	private function get_known_keys(): array {
-		$keys = [ 
-			'$schema',
-			'id',
-			'title',
-			'post_type',
-			'post_name',
-			'post_date',
-			'post_status',
-			'post_content',
-			'settings',
-			'modified',
-			'data',
-		];
-
-		// Add extra keys for other post types
-		$extras = [ 
-			'meta_box' => [ 'relationship' ],
-			'mb-relationship' => [ 'fields', 'meta_box', 'settings', 'data' ],
-			'mb-settings-page' => [ 'fields', 'meta_box', 'settings', 'data', 'relationship' ],
-		];
-
-		$post_type = $this->post_type ?? 'meta-box';
-
-		return array_merge( $keys, $extras[ $post_type ] ?? [] );
-	}
-
+	/**
+	 * By default, we move all keys under the root to the settings array.
+	 * Except these keys
+	 * 
+	 * @return string[]
+	 */
 	public function get_unneeded_keys(): array {
 		$default = [ 
 			'$schema',
@@ -562,7 +585,7 @@ class MetaBox extends Base {
 		$extras = [ 
 			'meta-box' => [ 'relationship' ],
 			'mb-relationship' => [ 'fields', 'settings_page', 'relationship', 'meta_box', 'data' ],
-			'mb-settings-page' => [  'fields', 'settings_page', 'relationship', 'meta_box', 'data' ],
+			'mb-settings-page' => [ 'fields', 'settings_page', 'relationship', 'meta_box', 'data' ],
 		];
 
 		return array_merge( $default, $extras[ $post_type ] ?? [] );

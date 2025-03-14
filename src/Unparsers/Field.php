@@ -201,15 +201,16 @@ class Field extends Base {
 	}
 
 	public function unparse_default_values() {
+		$this->id = $this->id ?? uniqid();
 		$this->_id = $this->_id ?? $this->id;
 
-		$key_defaults = [ 
-			'_id' => $this->id,
+		$key_defaults = [
+			'id' => $this->id, 
+			'_id' => $this->_id,
 			'save_field' => true,
 			'label_description' => '',
 			'desc' => '',
 			'size' => '',
-			'columns' => '',
 			'hide_from_rest' => false,
 			'hide_from_front' => false,
 			'before' => '',
@@ -219,8 +220,8 @@ class Field extends Base {
 			'required' => false,
 			'disabled' => false,
 			'readonly' => false,
-			'prepend' => "",
-			'append' => "",
+			'prepend' => '',
+			'append' => '',
 		];
 
 		foreach ( $key_defaults as $key => $default ) {
