@@ -1,6 +1,5 @@
 {
     "name": "wpmetabox/mbb-parser",
-    "abandoned": "meta-box/mbb-parser",
     "description": "Parse meta box settings from JSON",
     "license": "GPL-2.0-or-later",
     "type": "library",
