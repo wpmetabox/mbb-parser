@@ -65,16 +65,27 @@ class MetaBox extends Base {
 		$meta_key = self::TYPE_META[ $settings['post_type'] ] ?? 'meta_box';
 		$settings = array_merge( $settings, $settings[ $meta_key ] );
 
+		$preserve_keys = [
+			'custom_settings',
+			'custom_table',
+		];
+
 		foreach ( $this->get_unneeded_keys() as $key ) {
 			if ( $key === '$schema' ) {
 				continue;
 			}
 
-			if ( $key === 'settings' ) {
-				if ( is_array( $settings ) && ! empty( $settings['custom_settings'] ) ) {
-					$settings = array_merge( $settings, [
-						'custom_settings' => $settings['custom_settings'],
-					] );
+			if ( $key === 'settings' ) {;
+				if ( empty( $settings ) || ! is_array( $settings ) ) {
+					continue;
+				}
+
+				foreach ( $preserve_keys as $k ) {
+					$v = $this->lookup( [ $k, "settings.$k" ], [] );
+					
+					if ( ! empty( $v ) ) {
+						$settings[ $k ] = $v;
+					}
 				}
 			}
 
@@ -174,10 +185,7 @@ class MetaBox extends Base {
 	}
 
 	public function unparse_custom_table() {
-		if ( isset( $this->settings['settings']['custom_table'] ) ) {
-			return $this;
-		}
-
+		$custom_table = $this->lookup( [ 'custom_table', 'settings.custom_table' ], [] );
 		$post_type = $this->detect_post_type();
 
 		if ( $post_type !== 'meta-box' ) {
@@ -191,18 +199,18 @@ class MetaBox extends Base {
 			'create' => false,
 		];
 
-		if ( ! isset( $this->table ) || ( ! isset( $this->storage_type ) && $this->storage_type !== 'custom_table' ) ) {
-			$this->settings['settings']['custom_table'] = $default_custom_table;
+		$this->settings['settings']['custom_table'] = array_merge( $default_custom_table, $custom_table );
 
-			return $this;
+		if ( isset( $this->table ) ) {
+			$this->settings['settings']['custom_table'] = array_merge( $this->settings['settings']['custom_table'], [
+				'name' => $this->table,
+				'enable' => true,
+			] );
 		}
 
-		$this->settings['settings']['custom_table'] = [
-			'enable' => true,
-			'name'   => $this->table,
-			'prefix' => false,
-			'create' => false,
-		];
+		if ( ! empty( $this->settings['settings']['custom_table'] ) ) {
+			$this->settings['meta_box']['custom_table'] = $this->settings['settings']['custom_table'];
+		}
 
 		return $this;
 	}
@@ -310,8 +318,6 @@ class MetaBox extends Base {
 			'settings_page' => $this->settings_page ?? [],
 		];
 
-		// Merge custom settings
-		$custom_settings = $this->lookup( [ 'custom_settings' ], [] );
 		$settings        = array_merge( $this->lookup( [ 'settings' ], [] ), $settings );
 
 		foreach ( $this->settings as $key => $value ) {
@@ -325,6 +331,8 @@ class MetaBox extends Base {
 		unset( $settings['settings'] );
 		unset( $settings['fields'] );
 
+		// Merge custom settings
+		$custom_settings = $this->lookup( [ 'custom_settings' ], [] );
 		if ( ! empty( $custom_settings ) ) {
 			$settings['custom_settings'] = $custom_settings;
 		}
