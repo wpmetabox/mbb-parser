@@ -1,8 +1,6 @@
 <?php
 namespace MBBParser\Unparsers;
 
-use MetaBox\Support\Arr;
-
 class Settings extends Base {
 	// Allow these settings to be empty.
 	protected $empty_keys = [ 'post_types', 'taxonomies', 'settings_pages' ];

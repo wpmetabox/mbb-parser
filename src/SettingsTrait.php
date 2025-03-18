@@ -1,7 +1,6 @@
 <?php
 namespace MBBParser;
 
-use MetaBox\Support\Arr;
 /**
  * Use overloading magic methods for short syntax.
  */
