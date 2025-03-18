@@ -17,11 +17,34 @@ class Field extends Base {
 	];
 	
 	/**
-	 * Keep these settings even if they're false. Other false settings will be removed.
+	 * Remove these settings if they are false.
 	 * 
 	 * @var array
 	 */
-	protected $keep_false = [ 'inline', 'max_status' ];
+	protected $remove_false = [
+		// Group related settings.
+		'clone',
+		'clone_as_multiple',
+		'clone_default',
+		'clone_empty_start',
+		'collapsible',
+		'sort_clone',
+		// Date
+		'timestamp',
+		// File, Video
+		'force_delete',
+		// Select
+		'flatten',
+		'multiple',
+		// WYSIWYG
+		'raw',
+		// Color
+		'alpha_channel',
+		// Image		
+		'required',
+		'disabled',
+		'readonly',
+	];
 
 	private $choice_types = [ 'select', 'radio', 'checkbox_list', 'select_advanced', 'button_group', 'image_select', 'autocomplete' ];
 

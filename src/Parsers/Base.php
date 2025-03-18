@@ -68,14 +68,15 @@ class Base {
 			}
 
 			if ( $value === false ) {
-				if ( ! isset( $this->keep_false ) || ! is_array( $this->keep_false ) ) {
-					unset( $this->settings[ $key ] );
+				if ( ! isset( $this->remove_false ) || ! is_array( $this->remove_false ) ) {
 					continue;
 				}
 
-				if ( ! in_array( $key, $this->keep_false ) ) {
-					unset( $this->settings[ $key ] );
+				if ( ! in_array( $key, $this->remove_false ) ) {
+					continue;
 				}
+
+				unset( $this->settings[ $key ] );
 			}
 		}
 
