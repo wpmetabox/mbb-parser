@@ -14,30 +14,30 @@ class MetaBox extends Base {
 
 	private $settings_parser;
 
-	private $validation = [ 
-		'rules' => [],
+	private $validation = [
+		'rules'    => [],
 		'messages' => [],
 	];
 
 	/**
 	 * The schemas for each post type
-	 * 
+	 *
 	 * @var array
 	 */
-	public const SCHEMAS = [ 
-		'meta-box' => 'https://schemas.metabox.io/field-group.json',
-		'mb-relationship' => 'https://schemas.metabox.io/relationships.json',
+	public const SCHEMAS = [
+		'meta-box'         => 'https://schemas.metabox.io/field-group.json',
+		'mb-relationship'  => 'https://schemas.metabox.io/relationships.json',
 		'mb-settings-page' => 'https://schemas.metabox.io/settings-page.json',
 	];
 
 	/**
 	 * Match the post type with the meta key which is used to register the object
-	 * 
+	 *
 	 * @var array
 	 */
-	public const TYPE_META = [ 
-		'meta-box' => 'meta_box',
-		'mb-relationship' => 'relationship',
+	public const TYPE_META = [
+		'meta-box'         => 'meta_box',
+		'mb-relationship'  => 'relationship',
 		'mb-settings-page' => 'settings_page',
 	];
 
@@ -72,7 +72,7 @@ class MetaBox extends Base {
 
 			if ( $key === 'settings' ) {
 				if ( is_array( $settings ) && ! empty( $settings['custom_settings'] ) ) {
-					$settings = array_merge( $settings, [ 
+					$settings = array_merge( $settings, [
 						'custom_settings' => $settings['custom_settings'],
 					] );
 				}
@@ -111,19 +111,19 @@ class MetaBox extends Base {
 
 		// Store in custom_settings
 		$custom_settings                               = $this->lookup( [ 'settings.custom_settings' ], [] );
-		$custom_settings['tab_style']                  = [ 
-			'id' => 'tab_style',
-			'key' => 'tab_style',
+		$custom_settings['tab_style']                  = [
+			'id'    => 'tab_style',
+			'key'   => 'tab_style',
 			'value' => $tab_style,
 		];
-		$custom_settings['tab_default_active']         = [ 
-			'id' => 'tab_default_active',
-			'key' => 'tab_default_active',
+		$custom_settings['tab_default_active']         = [
+			'id'    => 'tab_default_active',
+			'key'   => 'tab_default_active',
 			'value' => $tab_default_active,
 		];
-		$custom_settings['tab_remember']               = [ 
-			'id' => 'tab_remember',
-			'key' => 'tab_remember',
+		$custom_settings['tab_remember']               = [
+			'id'    => 'tab_remember',
+			'key'   => 'tab_remember',
 			'value' => $tab_remember,
 		];
 		$this->settings['settings']['custom_settings'] = $custom_settings;
@@ -150,15 +150,15 @@ class MetaBox extends Base {
 				$icon_type = 'url';
 			}
 
-			$tab_field = [ 
-				'id' => $field['tab'],
-				'_id' => $field['tab'],
-				'type' => 'tab',
-				'name' => $label,
+			$tab_field = [
+				'id'        => $field['tab'],
+				'_id'       => $field['tab'],
+				'type'      => 'tab',
+				'name'      => $label,
 				'icon_type' => $icon_type,
-				'icon' => $icon,
-				'icon_fa' => $icon_type === 'fontawesome' ? $icon : '',
-				'icon_url' => $icon_type === 'url' ? $icon : '',
+				'icon'      => $icon,
+				'icon_fa'   => $icon_type === 'fontawesome' ? $icon : '',
+				'icon_url'  => $icon_type === 'url' ? $icon : '',
 			];
 
 			if ( ! in_array( $field['tab'], $added_tabs ) ) {
@@ -184,9 +184,9 @@ class MetaBox extends Base {
 			return $this;
 		}
 
-		$default_custom_table = [ 
+		$default_custom_table = [
 			'enable' => false,
-			'name' => '',
+			'name'   => '',
 			'prefix' => false,
 			'create' => false,
 		];
@@ -197,9 +197,9 @@ class MetaBox extends Base {
 			return $this;
 		}
 
-		$this->settings['settings']['custom_table'] = [ 
+		$this->settings['settings']['custom_table'] = [
 			'enable' => true,
-			'name' => $this->table,
+			'name'   => $this->table,
 			'prefix' => false,
 			'create' => false,
 		];
@@ -295,17 +295,17 @@ class MetaBox extends Base {
 		$title = $this->lookup( [ 'post_title', 'title' ], $id );
 
 		// Basic settings.
-		$settings = [ 
-			'title' => $title,
-			'id' => $id,
-			'post_types' => $this->post_types ?? [ 'post' ],
-			'priority' => $this->priority ?? 'high',
-			'style' => $this->style ?? 'default',
-			'closed' => $this->closed ?? false,
-			'class' => $this->class ?? '',
-			'prefix' => $this->prefix ?? '',
-			'revision' => $this->revision ?? false,
-			'text_domain' => $this->text_domain ?? 'your-text-domain',
+		$settings = [
+			'title'         => $title,
+			'id'            => $id,
+			'post_types'    => $this->post_types ?? [ 'post' ],
+			'priority'      => $this->priority ?? 'high',
+			'style'         => $this->style ?? 'default',
+			'closed'        => $this->closed ?? false,
+			'class'         => $this->class ?? '',
+			'prefix'        => $this->prefix ?? '',
+			'revision'      => $this->revision ?? false,
+			'text_domain'   => $this->text_domain ?? 'your-text-domain',
 			'function_name' => $this->function_name ?? '',
 			'settings_page' => $this->settings_page ?? [],
 		];
@@ -425,10 +425,10 @@ class MetaBox extends Base {
 				foreach ( $rules as $rule_name => $rule_value ) {
 					$id = uniqid();
 
-					$field['validation'][ $id ] = [ 
-						'id' => $id,
-						'name' => $rule_name,
-						'value' => $rule_value,
+					$field['validation'][ $id ] = [
+						'id'      => $id,
+						'name'    => $rule_name,
+						'value'   => $rule_value,
 						'message' => $validation['messages'][ $field_id ][ $rule_name ] ?? '',
 					];
 				}
@@ -448,10 +448,10 @@ class MetaBox extends Base {
 		}
 		$custom_settings = $this->lookup( [ 'settings.custom_settings' ], [] );
 
-		$custom_settings['geo']                        = [ 
-			'id' => 'geo',
-			'key' => 'geo',
-			'value' => is_array( $geo ) ? wp_json_encode( $geo ) : $geo // Keep booleans as-is
+		$custom_settings['geo']                        = [
+			'id'    => 'geo',
+			'key'   => 'geo',
+			'value' => is_array( $geo ) ? wp_json_encode( $geo ) : $geo, // Keep booleans as-is
 		];
 		$this->settings['settings']['custom_settings'] = $custom_settings;
 		return $this;
@@ -462,12 +462,12 @@ class MetaBox extends Base {
 		if ( empty( $columns ) ) {
 			return $this;
 		}
-		$custom_settings                               = $this->lookup( [ 'settings.custom_settings' ], [] );
-		$id                                            = uniqid();
-		$custom_settings[ $id ]                        = [ 
-			'id' => $id,
-			'key' => 'columns',
-			'value' => is_array( $columns ) ? wp_json_encode( $columns ) : $columns
+		$custom_settings        = $this->lookup( [ 'settings.custom_settings' ], [] );
+		$id                     = uniqid();
+		$custom_settings[ $id ] = [
+			'id'    => $id,
+			'key'   => 'columns',
+			'value' => is_array( $columns ) ? wp_json_encode( $columns ) : $columns,
 		];
 		$this->settings['settings']['custom_settings'] = $custom_settings;
 		return $this;
@@ -481,19 +481,19 @@ class MetaBox extends Base {
 			if ( empty( $data ) ) {
 				continue;
 			}
-			$setting_include_exclude = [ 
-				'type' => $keyword,
+			$setting_include_exclude = [
+				'type'     => $keyword,
 				'relation' => $include_exclude['relation'] ?? 'OR',
-				'rules' => [],
+				'rules'    => [],
 			];
 			foreach ( $data as $rule_name => $rule_value ) {
 				if ( $rule_name === 'relation' ) {
 					$setting_include_exclude['relation'] = $rule_value;
 					continue;
 				}
-				$setting_include_exclude['rules'][ $rule_name ] = [ 
-					'id' => $rule_name,
-					'name' => $rule_name,
+				$setting_include_exclude['rules'][ $rule_name ] = [
+					'id'    => $rule_name,
+					'name'  => $rule_name,
 					'value' => $rule_value,
 				];
 			}
@@ -513,19 +513,19 @@ class MetaBox extends Base {
 			if ( empty( $data ) ) {
 				continue;
 			}
-			$setting_show_hide = [ 
-				'type' => $keyword,
+			$setting_show_hide = [
+				'type'     => $keyword,
 				'relation' => $show_hide['relation'] ?? 'OR',
-				'rules' => [],
+				'rules'    => [],
 			];
 			foreach ( $data as $rule_name => $rule_value ) {
 				if ( $rule_name === 'relation' ) {
 					$setting_show_hide['relation'] = $rule_value;
 					continue;
 				}
-				$setting_show_hide['rules'][ $rule_name ] = [ 
-					'id' => $rule_name,
-					'name' => $rule_name,
+				$setting_show_hide['rules'][ $rule_name ] = [
+					'id'    => $rule_name,
+					'name'  => $rule_name,
 					'value' => $rule_value,
 				];
 			}
@@ -539,11 +539,11 @@ class MetaBox extends Base {
 	/**
 	 * By default, we move all keys under the root to the settings array.
 	 * Except these keys
-	 * 
+	 *
 	 * @return string[]
 	 */
 	public function get_unneeded_keys(): array {
-		$default = [ 
+		$default = [
 			'$schema',
 			'ID',
 			'post_name',
@@ -559,32 +559,32 @@ class MetaBox extends Base {
 			'post_type',
 			'post_title',
 			'settings_page',
-			"menu_order",
-			"ping_status",
-			"pinged",
-			"post_author",
-			"post_content_filtered",
-			"post_date_gmt",
-			"post_excerpt",
-			"post_mime_type",
-			"post_modified",
-			"post_modified_gmt",
-			"post_parent",
-			"post_password",
-			"to_ping",
-			"comment_count",
-			"comment_status",
-			"filter",
-			"guid",
-			"revision",
+			'menu_order',
+			'ping_status',
+			'pinged',
+			'post_author',
+			'post_content_filtered',
+			'post_date_gmt',
+			'post_excerpt',
+			'post_mime_type',
+			'post_modified',
+			'post_modified_gmt',
+			'post_parent',
+			'post_password',
+			'to_ping',
+			'comment_count',
+			'comment_status',
+			'filter',
+			'guid',
+			'revision',
 		];
 
 		$post_type = $this->detect_post_type() ?? 'meta-box';
 
 		// Add extra keys for other post types
-		$extras = [ 
-			'meta-box' => [ 'relationship' ],
-			'mb-relationship' => [ 'fields', 'settings_page', 'relationship', 'meta_box', 'data' ],
+		$extras = [
+			'meta-box'         => [ 'relationship' ],
+			'mb-relationship'  => [ 'fields', 'settings_page', 'relationship', 'meta_box', 'data' ],
 			'mb-settings-page' => [ 'fields', 'settings_page', 'relationship', 'meta_box', 'data' ],
 		];
 

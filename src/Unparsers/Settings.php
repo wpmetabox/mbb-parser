@@ -30,11 +30,11 @@ class Settings extends Base {
 			return $string;
 		}
 
-		return strtr( $string, [ 
-			'{{ site.path }}' 	=> wp_normalize_path( ABSPATH ),
-			'{{ site.url }}'  	=> untrailingslashit( home_url( '/' ) ),
-			'{{ theme.path }}' 	=> wp_normalize_path( get_stylesheet_directory() ),
-			'{{ theme.url }}' 	=> get_stylesheet_directory_uri(),
+		return strtr( $string, [
+			'{{ site.path }}'  => wp_normalize_path( ABSPATH ),
+			'{{ site.url }}'   => untrailingslashit( home_url( '/' ) ),
+			'{{ theme.path }}' => wp_normalize_path( get_stylesheet_directory() ),
+			'{{ theme.url }}'  => get_stylesheet_directory_uri(),
 		] );
 	}
 }

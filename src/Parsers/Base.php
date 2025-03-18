@@ -15,7 +15,7 @@ class Base {
 
 	public function set_settings( $settings ) {
 		$this->settings = (array) $settings;
-		
+
 		return $this;
 	}
 
@@ -54,7 +54,7 @@ class Base {
 	protected function remove_empty_values() {
 		foreach ( $this->settings as $key => $value ) {
 			// Remove empty string in an array.
-			$value = ! is_array( $value ) ? $value : array_filter( $value, function ($v) {
+			$value = ! is_array( $value ) ? $value : array_filter( $value, function ( $v ) {
 				return $v !== '';
 			} );
 
@@ -154,7 +154,7 @@ class Base {
 				$condition = null;
 				continue;
 			}
-			$condition = [ 
+			$condition = [
 				$condition['name'],
 				$condition['operator'],
 				$condition['value'],
