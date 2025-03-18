@@ -6,7 +6,7 @@ use MetaBox\Support\Arr;
  * Use overloading magic methods for short syntax.
  */
 trait SettingsTrait {
-	protected array $settings;
+	protected $settings;
 
 	public function get_settings(): array {
 		return $this->settings;
