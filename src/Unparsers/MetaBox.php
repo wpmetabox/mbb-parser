@@ -67,7 +67,6 @@ class MetaBox extends Base {
 
 		$preserve_keys = [
 			'custom_settings',
-			'custom_table',
 		];
 
 		foreach ( $this->get_unneeded_keys() as $key ) {
@@ -75,14 +74,14 @@ class MetaBox extends Base {
 				continue;
 			}
 
-			if ( $key === 'settings' ) {;
+			if ( $key === 'settings' ) {
 				if ( empty( $settings ) || ! is_array( $settings ) ) {
 					continue;
 				}
 
 				foreach ( $preserve_keys as $k ) {
 					$v = $this->lookup( [ $k, "settings.$k" ], [] );
-					
+
 					if ( ! empty( $v ) ) {
 						$settings[ $k ] = $v;
 					}
@@ -186,7 +185,7 @@ class MetaBox extends Base {
 
 	public function unparse_custom_table() {
 		$custom_table = $this->lookup( [ 'custom_table', 'settings.custom_table' ], [] );
-		$post_type = $this->detect_post_type();
+		$post_type    = $this->detect_post_type();
 
 		if ( $post_type !== 'meta-box' ) {
 			return $this;
@@ -203,13 +202,29 @@ class MetaBox extends Base {
 
 		if ( isset( $this->table ) ) {
 			$this->settings['settings']['custom_table'] = array_merge( $this->settings['settings']['custom_table'], [
-				'name' => $this->table,
+				'name'   => $this->table,
 				'enable' => true,
 			] );
 		}
 
 		if ( ! empty( $this->settings['settings']['custom_table'] ) ) {
-			$this->settings['meta_box']['custom_table'] = $this->settings['settings']['custom_table'];
+			$meta_box_custom_table = [];
+
+			// We need those keys on meta box only for minimal format,
+			// other keys can be retrieved from meta box settings itself.
+			$extra_keys = [
+				'prefix',
+				'create',
+			];
+
+			foreach ( $extra_keys as $key ) {
+				if ( isset( $this->settings['settings']['custom_table'][ $key ] ) &&
+					$this->settings['settings']['custom_table'][ $key ] ) {
+					$meta_box_custom_table[ $key ] = true;
+				}
+			}
+
+			$this->settings['meta_box']['custom_table'] = $meta_box_custom_table;
 		}
 
 		return $this;
@@ -318,7 +333,7 @@ class MetaBox extends Base {
 			'settings_page' => $this->settings_page ?? [],
 		];
 
-		$settings        = array_merge( $this->lookup( [ 'settings' ], [] ), $settings );
+		$settings = array_merge( $this->lookup( [ 'settings' ], [] ), $settings );
 
 		foreach ( $this->settings as $key => $value ) {
 			if ( in_array( $key, $this->get_unneeded_keys() ) ) {
