@@ -11,8 +11,6 @@ class Settings extends Base {
 			->unparse_numeric_values()
 			->unparse_location()
 			->unparse_conditional_logic();
-
-		unset( $this->object_type );
 	}
 
 	private function unparse_location() {

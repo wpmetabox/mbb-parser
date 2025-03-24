@@ -321,6 +321,7 @@ class MetaBox extends Base {
 		$settings = [
 			'title'         => $title,
 			'id'            => $id,
+			'object_type'   => $this->object_type ?? 'post',
 			'post_types'    => $this->post_types ?? [ 'post' ],
 			'priority'      => $this->priority ?? 'high',
 			'style'         => $this->style ?? 'default',
@@ -334,7 +335,7 @@ class MetaBox extends Base {
 		];
 
 		$settings = array_merge( $this->lookup( [ 'settings' ], [] ), $settings );
-
+		
 		foreach ( $this->settings as $key => $value ) {
 			if ( in_array( $key, $this->get_unneeded_keys() ) ) {
 				continue;
