@@ -33,11 +33,12 @@ class MetaBox extends Base {
 			$this->settings['validation'] = $this->validation;
 		}
 
+		$this->settings = array_merge( [ 'fields' => $this->fields ], $settings );
 		$this->settings = apply_filters( 'mbb_meta_box_settings', $this->settings );
 
 		// Remove array keys again. Some methods like parse tabs change fields.
 		$this->fields   = array_values( $this->fields );
-		$this->settings = array_merge( [ 'fields' => $this->fields ], $settings );
+		$this->settings['fields'] = $this->fields;
 	}
 
 	private function parse_settings() {
