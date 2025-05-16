@@ -15,7 +15,7 @@ class FieldJson extends Base {
 			return;
 		}
 
-		$json = json_decode( $field, true );
+		$json = json_decode( wp_unslash( $field ), true );
 		if ( ! is_array( $json ) || json_last_error() !== JSON_ERROR_NONE ) {
 			return;
 		}
