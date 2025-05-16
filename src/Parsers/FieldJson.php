@@ -21,5 +21,9 @@ class FieldJson extends Base {
 		}
 
 		$field = $json;
+
+		if ( isset( $field['fields'] ) ) {
+			$this->parse_fields( $field['fields'] );
+		}
 	}
 }
