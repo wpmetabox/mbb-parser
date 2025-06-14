@@ -18,9 +18,6 @@ class Settings extends Base {
 	];
 
 	public function parse() {
-		// `modified` is used only for local JSON feature, it should not be available in the generated PHP code.
-		unset( $this->modified );
-
 		$this->remove_default( 'context', 'normal' )
 			->parse_boolean_values()
 			->parse_numeric_values()
