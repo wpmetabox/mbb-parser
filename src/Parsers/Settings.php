@@ -109,6 +109,7 @@ class Settings extends Base {
 				'enqueue_style',
 				'enqueue_script',
 				'enqueue_assets',
+				'block_json',
 			];
 			foreach ( $params as $param ) {
 				unset( $this->{$param} );
@@ -165,6 +166,8 @@ class Settings extends Base {
 			if ( ! empty( $this->settings['block_json']['path'] ) ) {
 				$this->settings['block_json']['path'] = $this->replace_variables( $this->settings['block_json']['path'] );
 			}
+		} else {
+			unset( $this->block_json );
 		}
 
 		unset( $this->render_with );
