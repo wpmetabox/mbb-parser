@@ -207,7 +207,7 @@ class MetaBox extends Base {
 			] );
 		}
 
-		if ( ! empty( $this->settings['settings']['custom_table'] ) ) {
+		if ( ! empty( $this->settings['settings']['custom_table'] ) && ! empty( $this->settings['settings']['custom_table']['enable'] ) ) {
 			$meta_box_custom_table = [];
 
 			// We need those keys on meta box only for minimal format,
