@@ -37,7 +37,6 @@ class Settings extends Base {
 		$object_type = $this->object_type ?: 'post';
 
 		if ( in_array( $object_type, [ 'user', 'comment', 'block' ], true ) ) {
-			unset( $this->$object_type );
 			$this->type = $object_type;
 		}
 
