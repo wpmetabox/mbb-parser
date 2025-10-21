@@ -90,9 +90,42 @@ class MetaBox extends Base {
 			unset( $settings[ $key ] );
 		}
 
+		// Strip prefix from field IDs before exporting to JSON (minimal format)
+		if ( ! empty( $settings['fields'] ) && is_array( $settings['fields'] ) ) {
+			$prefix = $settings['prefix'] ?? '';
+
+			if ( $prefix ) {
+				$settings['fields'] = $this->strip_prefix_from_fields( $settings['fields'], $prefix );
+			}
+		}
+
 		ksort( $settings );
 
 		return $settings;
+	}
+
+	/**
+	 * Recursively strip prefix from field IDs (for export)
+	 */
+	private function strip_prefix_from_fields( $fields, $prefix ) {
+		foreach ( $fields as $key => &$field ) {
+			// Strip prefix from field ID
+			if ( isset( $field['id'] ) && strpos( $field['id'], $prefix ) === 0 ) {
+				$field['id'] = substr( $field['id'], strlen( $prefix ) );
+
+				// Update _id as well
+				if ( isset( $field['_id'] ) && strpos( $field['_id'], $prefix ) === 0 ) {
+					$field['_id'] = substr( $field['_id'], strlen( $prefix ) );
+				}
+			}
+
+			// Recursively strip from sub-fields (for group fields)
+			if ( ! empty( $field['fields'] ) && is_array( $field['fields'] ) ) {
+				$field['fields'] = $this->strip_prefix_from_fields( $field['fields'], $prefix );
+			}
+		}
+
+		return $fields;
 	}
 
 	public function unparse_schema() {
@@ -449,12 +482,22 @@ class MetaBox extends Base {
 	}
 
 	public function convert_fields_for_builder( $fields = [] ): array {
+		// Get prefix to strip from field IDs during export
+		$prefix = $this->settings['settings']['prefix'] ?? '';
+
 		foreach ( $fields as $id => $field ) {
 			$unparser = new Field( $field );
 			$unparser->unparse();
 
 			$field = $unparser->get_settings();
 
+			// Strip prefix from field ID for clean export
+			if ( $prefix && isset( $field['id'] ) && strpos( $field['id'], $prefix ) === 0 ) {
+				$field['id'] = substr( $field['id'], strlen( $prefix ) );
+				$field['_id'] = $field['id'];
+			}
+
+			// Recursively process sub-fields
 			if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
 				$field['fields'] = $this->convert_fields_for_builder( $field['fields'] );
 			}
