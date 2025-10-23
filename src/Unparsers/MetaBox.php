@@ -90,14 +90,14 @@ class MetaBox extends Base {
 			unset( $settings[ $key ] );
 		}
 
-		// Strip prefix from field IDs before exporting to JSON (minimal format)
-		if ( ! empty( $settings['fields'] ) && is_array( $settings['fields'] ) ) {
-			$prefix = $settings['prefix'] ?? '';
+	// Strip prefix from field IDs before exporting to JSON (minimal format)
+	if ( ! empty( $settings['fields'] ) && is_array( $settings['fields'] ) ) {
+		$prefix = $settings['prefix'] ?? '';
 
-			if ( $prefix ) {
-				$settings['fields'] = $this->strip_prefix_from_fields( $settings['fields'], $prefix );
-			}
+		if ( $prefix ) {
+			$this->strip_prefix_from_fields( $settings['fields'], $prefix );
 		}
+	}
 
 		ksort( $settings );
 
@@ -107,25 +107,19 @@ class MetaBox extends Base {
 	/**
 	 * Recursively strip prefix from field IDs (for export)
 	 */
-	private function strip_prefix_from_fields( $fields, $prefix ) {
-		foreach ( $fields as $key => &$field ) {
+	private function strip_prefix_from_fields( array &$fields, string $prefix ): void {
+		foreach ( $fields as &$field ) {
 			// Strip prefix from field ID
-			if ( isset( $field['id'] ) && strpos( $field['id'], $prefix ) === 0 ) {
+			if ( isset( $field['id'] ) && str_starts_with( $field['id'], $prefix ) ) {
 				$field['id'] = substr( $field['id'], strlen( $prefix ) );
 
-				// Update _id as well
-				if ( isset( $field['_id'] ) && strpos( $field['_id'], $prefix ) === 0 ) {
-					$field['_id'] = substr( $field['_id'], strlen( $prefix ) );
-				}
 			}
 
 			// Recursively strip from sub-fields (for group fields)
 			if ( ! empty( $field['fields'] ) && is_array( $field['fields'] ) ) {
-				$field['fields'] = $this->strip_prefix_from_fields( $field['fields'], $prefix );
+				$this->strip_prefix_from_fields( $field['fields'], $prefix );
 			}
 		}
-
-		return $fields;
 	}
 
 	public function unparse_schema() {
@@ -489,13 +483,12 @@ class MetaBox extends Base {
 			$unparser = new Field( $field );
 			$unparser->unparse();
 
-			$field = $unparser->get_settings();
+		$field = $unparser->get_settings();
 
-			// Strip prefix from field ID for clean export
-			if ( $prefix && isset( $field['id'] ) && strpos( $field['id'], $prefix ) === 0 ) {
-				$field['id'] = substr( $field['id'], strlen( $prefix ) );
-				$field['_id'] = $field['id'];
-			}
+		// Strip prefix from field ID for clean export
+		if ( $prefix && isset( $field['id'] ) && str_starts_with( $field['id'], $prefix ) ) {
+			$field['id'] = substr( $field['id'], strlen( $prefix ) );
+		}
 
 			// Recursively process sub-fields
 			if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
