@@ -90,14 +90,14 @@ class MetaBox extends Base {
 			unset( $settings[ $key ] );
 		}
 
-	// Strip prefix from field IDs before exporting to JSON (minimal format)
-	if ( ! empty( $settings['fields'] ) && is_array( $settings['fields'] ) ) {
-		$prefix = $settings['prefix'] ?? '';
+		// Strip prefix from field IDs before exporting to JSON (minimal format)
+		if ( ! empty( $settings['fields'] ) && is_array( $settings['fields'] ) ) {
+			$prefix = $settings['prefix'] ?? '';
 
-		if ( $prefix ) {
-			$this->strip_prefix_from_fields( $settings['fields'], $prefix );
+			if ( $prefix ) {
+				$this->strip_prefix_from_fields( $settings['fields'], $prefix );
+			}
 		}
-	}
 
 		ksort( $settings );
 
@@ -339,7 +339,7 @@ class MetaBox extends Base {
 
 		$tab_items = [];
 		foreach ( $tabs as $key => $value ) {
-			$id = uniqid( 'tab_' );
+			$id               = uniqid( 'tab_' );
 			$tab_items[ $id ] = compact( 'id', 'key', 'value' );
 		}
 
@@ -483,12 +483,12 @@ class MetaBox extends Base {
 			$unparser = new Field( $field );
 			$unparser->unparse();
 
-		$field = $unparser->get_settings();
+			$field = $unparser->get_settings();
 
-		// Strip prefix from field ID for clean export
-		if ( $prefix && isset( $field['id'] ) && str_starts_with( $field['id'], $prefix ) ) {
-			$field['id'] = substr( $field['id'], strlen( $prefix ) );
-		}
+			// Strip prefix from field ID for clean export
+			if ( $prefix && isset( $field['id'] ) && str_starts_with( $field['id'], $prefix ) ) {
+				$field['id'] = substr( $field['id'], strlen( $prefix ) );
+			}
 
 			// Recursively process sub-fields
 			if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
