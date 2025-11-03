@@ -59,28 +59,24 @@ class MetaBox extends Base {
 		$this->settings_parser->parse();
 	}
 
-	private function parse_fields( &$fields, $apply_prefix = true ) {
-		foreach ( $fields as &$field ) {
-			$this->parse_field( $field, $apply_prefix );
-		}
+	private function parse_fields( &$fields ) {
+		array_walk( $fields, [ $this, 'parse_field' ] );
 		$fields = array_values( array_filter( $fields ) ); // Make sure to remove empty (such as empty groups) or "tab" fields.
 	}
 
-	private function parse_field( &$field, $apply_prefix = true ) {
+	private function parse_field( &$field ) {
 		$parser = new Field( $field );
 		$parser->parse();
 		$field = $parser->get_settings();
 
-		// Only apply prefix to top-level fields, not sub-fields in groups
-		if ( $apply_prefix && $this->settings_parser->prefix && isset( $field['id'] ) ) {
+		if ( $this->settings_parser->prefix && isset( $field['id'] ) ) {
 			$field['id'] = $this->settings_parser->prefix . $field['id'];
 		}
 
 		$this->parse_field_validation( $field );
 
-		// Don't apply prefix to sub-fields (they should inherit parent's context)
 		if ( isset( $field['fields'] ) ) {
-			$this->parse_fields( $field['fields'], false );
+			$this->parse_fields( $field['fields'] );
 		}
 	}
 

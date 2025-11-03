@@ -112,7 +112,6 @@ class MetaBox extends Base {
 			// Strip prefix from field ID
 			if ( isset( $field['id'] ) && str_starts_with( $field['id'], $prefix ) ) {
 				$field['id'] = substr( $field['id'], strlen( $prefix ) );
-
 			}
 
 			// Recursively strip from sub-fields (for group fields)
