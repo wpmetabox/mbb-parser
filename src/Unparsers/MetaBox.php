@@ -1,6 +1,8 @@
 <?php
 namespace MBBParser\Unparsers;
 
+use MBBParser\Prefixer;
+
 /**
  * This class is the inverse of the parser.
  * We convert the parsed data back to the format that can be saved to the database.
@@ -92,33 +94,12 @@ class MetaBox extends Base {
 
 		// Strip prefix from field IDs before exporting to JSON (minimal format)
 		if ( ! empty( $settings['fields'] ) && is_array( $settings['fields'] ) ) {
-			$prefix = $settings['prefix'] ?? '';
-
-			if ( $prefix ) {
-				$this->strip_prefix_from_fields( $settings['fields'], $prefix );
-			}
+			Prefixer::remove( $settings['fields'], $settings['prefix'] ?? '' );
 		}
 
 		ksort( $settings );
 
 		return $settings;
-	}
-
-	/**
-	 * Recursively strip prefix from field IDs (for export)
-	 */
-	private function strip_prefix_from_fields( array &$fields, string $prefix ): void {
-		foreach ( $fields as &$field ) {
-			// Strip prefix from field ID
-			if ( isset( $field['id'] ) && str_starts_with( $field['id'], $prefix ) ) {
-				$field['id'] = substr( $field['id'], strlen( $prefix ) );
-			}
-
-			// Recursively strip from sub-fields (for group fields)
-			if ( ! empty( $field['fields'] ) && is_array( $field['fields'] ) ) {
-				$this->strip_prefix_from_fields( $field['fields'], $prefix );
-			}
-		}
 	}
 
 	public function unparse_schema() {
@@ -281,21 +262,52 @@ class MetaBox extends Base {
 		return $this;
 	}
 
-	public function unparse_meta_box() {
+	/**
+	 * Unparse the meta box.
+	 *
+	 * For fields:
+	 * - Always keep it as a numeric array.
+	 * - Remove prefix from field IDs for the settings, that can be used for export, builder, local JSON.
+	 * - Add prefix to field IDs for parsed meta box, that's ready for registering.
+	 */
+	public function unparse_meta_box(): static {
 		// If not meta box, return
 		if ( $this->detect_post_type() !== 'meta-box' ) {
 			return $this;
 		}
 
+		$prefix = $this->lookup( [ 'prefix', 'settings.prefix' ], '' );
+
+		// If meta box is already parsed, normalize the fields array.
 		if ( isset( $this->meta_box ) && is_array( $this->meta_box ) ) {
 			// Fix: error on earlier versions that saved fields as object
-			$fields                               = array_values( $this->meta_box['fields'] ?? [] );
+			$fields = $this->meta_box['fields'] ?? [];
+			$fields = array_values( $fields );
+
+			// Remove prefix from field IDs for the settings, that can be used for export, builder, local JSON.
+			Prefixer::remove( $fields, $prefix );
+			$this->fields = $fields;
+
+			// Add prefix to field IDs for parsed meta box, that's ready for registering.
+			Prefixer::add( $fields, $prefix );
 			$this->settings['meta_box']['fields'] = $fields;
 
 			return $this;
 		}
 
+		// If meta box is not parsed, normalize the fields array.
+		$fields = $this->fields ?: [];
+		$fields = array_values( $fields );
+
+		// Remove prefix from field IDs for the settings, that can be used for export, builder, local JSON.
+		Prefixer::remove( $fields, $prefix );
+		$this->fields = $fields;
+
 		$meta_box = $this->get_settings();
+
+		// Add prefix to field IDs for parsed meta box, that's ready for registering.
+		Prefixer::add( $fields, $prefix );
+		$meta_box['fields'] = $fields;
 
 		foreach ( $this->get_unneeded_keys() as $key ) {
 			unset( $meta_box[ $key ] );
@@ -475,21 +487,12 @@ class MetaBox extends Base {
 	}
 
 	public function convert_fields_for_builder( $fields = [] ): array {
-		// Get prefix to strip from field IDs during export
-		$prefix = $this->settings['settings']['prefix'] ?? '';
-
 		foreach ( $fields as $id => $field ) {
 			$unparser = new Field( $field );
 			$unparser->unparse();
 
 			$field = $unparser->get_settings();
 
-			// Strip prefix from field ID for clean export
-			if ( $prefix && isset( $field['id'] ) && str_starts_with( $field['id'], $prefix ) ) {
-				$field['id'] = substr( $field['id'], strlen( $prefix ) );
-			}
-
-			// Recursively process sub-fields
 			if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
 				$field['fields'] = $this->convert_fields_for_builder( $field['fields'] );
 			}
