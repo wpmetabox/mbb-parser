@@ -319,8 +319,7 @@ class MetaBox extends Base {
 		return $this;
 	}
 
-	public function unparse_settings_page() {
-		// If not meta box, return
+	public function unparse_settings_page(): self {
 		if ( $this->detect_post_type() !== 'mb-settings-page' ) {
 			return $this;
 		}
@@ -343,6 +342,10 @@ class MetaBox extends Base {
 	}
 
 	private function unparse_settings_page_tabs(): self {
+		if ( $this->detect_post_type() !== 'mb-settings-page' ) {
+			return $this;
+		}
+
 		$tabs = $this->lookup( [ 'tabs' ], [] );
 		if ( empty( $tabs ) ) {
 			return $this;
