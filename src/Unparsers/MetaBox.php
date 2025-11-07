@@ -10,7 +10,10 @@ use MBBParser\Prefixer;
  * This is to compatibility and allow users to import/export data between different versions, even with other plugins like ACF.
  */
 class MetaBox extends Base {
-	// Allows these keys to be empty as they are required to be compatible with the builder.
+	/**
+	 * Allows these keys to be empty as they are required to be compatible with the builder.
+	 * @var string[]
+	 */
 	protected $empty_keys = [ 'fields', 'meta_box', 'settings', 'data', 'modified' ];
 
 	private $settings_parser;
@@ -181,6 +184,7 @@ class MetaBox extends Base {
 				'icon_url'  => $icon_type === 'url' ? $icon : '',
 			];
 
+			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			if ( ! in_array( $field['tab'], $added_tabs ) ) {
 				$new_fields[ $field['tab'] ] = $tab_field;
 				$added_tabs[]                = $tab_field;
@@ -413,7 +417,7 @@ class MetaBox extends Base {
 		$settings = array_merge( $this->lookup( [ 'settings' ], [] ), $settings );
 
 		foreach ( $this->settings as $key => $value ) {
-			if ( in_array( $key, $this->get_unneeded_keys() ) ) {
+			if ( in_array( $key, $this->get_unneeded_keys(), true ) ) {
 				continue;
 			}
 
@@ -442,7 +446,7 @@ class MetaBox extends Base {
 
 		$this->post_type    = $post_type;
 		$this->post_name    = $this->lookup( [ 'post_name', 'settings.id', 'relationship.id', 'meta_box.id', 'id' ] );
-		$this->post_date    = $this->lookup( [ 'post_date' ], date( 'Y-m-d H:i:s' ) );
+		$this->post_date    = $this->lookup( [ 'post_date' ], gmdate( 'Y-m-d H:i:s' ) );
 		$this->post_status  = $this->lookup( [ 'post_status' ], 'publish' );
 		$this->post_content = $this->lookup( [ 'post_content' ], '' );
 
