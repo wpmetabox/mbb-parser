@@ -274,7 +274,7 @@ class MetaBox extends Base {
 	 * - Remove prefix from field IDs for the settings, that can be used for export, builder, local JSON.
 	 * - Add prefix to field IDs for parsed meta box, that's ready for registering.
 	 */
-	public function unparse_meta_box(): static {
+	public function unparse_meta_box(): self {
 		// If not meta box, return
 		if ( $this->detect_post_type() !== 'meta-box' ) {
 			return $this;
