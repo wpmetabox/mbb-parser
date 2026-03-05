@@ -271,6 +271,31 @@ class Field extends Base {
 		return $this;
 	}
 
+	private function parse_field_tab() {
+		$icon_type = $this->icon_type ?? 'dashicons';
+		$icon      = '';
+
+		if ( $icon_type === 'dashicons' && ! empty( $this->icon ) ) {
+			$icon = $this->icon;
+		} elseif ( $icon_type === 'fontawesome' && ! empty( $this->icon_fa ) ) {
+			$icon = $this->icon_fa;
+		} elseif ( $icon_type === 'url' && ! empty( $this->icon_url ) ) {
+			$icon = $this->icon_url;
+		}
+
+		// Set the consolidated icon.
+		if ( $icon ) {
+			$this->icon = $icon;
+		}
+
+		// Remove builder-specific icon properties.
+		unset( $this->icon_type );
+		unset( $this->icon_fa );
+		unset( $this->icon_url );
+
+		return $this;
+	}
+
 	private function parse_text_limiter() {
 		if ( ! isset( $this->text_limiter ) ) {
 			return $this;

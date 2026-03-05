@@ -18,6 +18,9 @@ class MetaBox extends Base {
 		$this->fields = is_array( $this->fields ) ? $this->fields : [];
 		$this->fields = array_values( $this->fields );
 
+		// Reconstruct tabs structure with icons before parse_fields() removes tab fields.
+		$this->parse_tabs();
+
 		$this->parse_boolean_values()
 			->parse_numeric_values()
 			->parse_fields( $this->settings['fields'] );
@@ -114,5 +117,53 @@ class MetaBox extends Base {
 		}
 
 		unset( $field['validation'] );
+	}
+
+	/**
+	 * Reconstruct tabs structure from tab fields.
+	 * Must be called before parse_fields() which removes tab fields.
+	 * This ensures exported JSON retains tab icons.
+	 */
+	private function parse_tabs() {
+		$fields = $this->fields;
+		if ( empty( $fields ) ) {
+			return $this;
+		}
+
+		$tabs     = [];
+		$has_tabs = false;
+
+		foreach ( $fields as $field ) {
+			if ( ( $field['type'] ?? '' ) !== 'tab' ) {
+				continue;
+			}
+
+			$has_tabs = true;
+			$tab_id   = $field['id'] ?? ( $field['_id'] ?? '' );
+			if ( empty( $tab_id ) ) {
+				continue;
+			}
+
+			// Determine icon from builder properties.
+			$icon_type = $field['icon_type'] ?? 'dashicons';
+			$icon      = '';
+
+			if ( $icon_type === 'dashicons' && ! empty( $field['icon'] ) ) {
+				$icon = $field['icon'];
+			} elseif ( $icon_type === 'fontawesome' && ! empty( $field['icon_fa'] ) ) {
+				$icon = $field['icon_fa'];
+			} elseif ( $icon_type === 'url' && ! empty( $field['icon_url'] ) ) {
+				$icon = $field['icon_url'];
+			}
+
+			$label           = $field['name'] ?? $tab_id;
+			$tabs[ $tab_id ] = $icon ? [ 'label' => $label, 'icon' => $icon ] : $label;
+		}
+
+		if ( $has_tabs && ! empty( $tabs ) ) {
+			$this->settings['tabs'] = $tabs;
+		}
+
+		return $this;
 	}
 }
