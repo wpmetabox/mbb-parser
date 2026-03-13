@@ -13,32 +13,146 @@ class Field extends Base {
 	/**
 	 * Known field keys handled natively by the Builder UI.
 	 * Any other scalar keys will be moved to custom_settings during unparse.
+	 * @var array
 	 */
 	private static $known_keys = [
-		// Core & identity
-		'id', '_id', 'type', 'name', 'std', 'placeholder', 'save_field', '_state',
-		// Description & appearance
-		'label_description', 'desc', 'size', 'columns', 'before', 'after', 'class',
-		'prepend', 'append', 'input_attributes',
-		// Behavior flags
-		'required', 'disabled', 'readonly', 'hide_from_rest', 'hide_from_front',
-		'multiple', 'inline', 'select_all_none', 'flatten',
-		'sanitize_callback', 'force_delete', 'timestamp', 'raw', 'alpha_channel',
-		// Clone
-		'clone', 'sort_clone', 'clone_default', 'clone_as_multiple',
-		'min_clone', 'max_clone', 'add_button', 'clone_empty_start',
-		// Complex/array keys
-		'options', 'js_options', 'query_args', 'attributes', 'custom_settings',
-		'text_limiter', 'limit', 'limit_type', 'conditional_logic', 'visible', 'hidden',
-		'tooltip', 'admin_columns', 'datalist', 'datalist_choices', 'tab', 'validation',
-		'fields', 'field_type', 'collapsible',
-		// File & image
-		'max_file_uploads', 'image_size', 'add_to', 'max_status', 'upload_dir',
-		// Group
-		'default_state', 'save_state', 'group_title',
-		// Key-value field
-		'placeholder_key', 'placeholder_value',
-		// Internal
+		// Core field settings (all field types)
+		'id',
+		'_id',
+		'type',
+		'name',
+		'std',
+		'placeholder',
+		'save_field',
+		'_state',
+		'field_name',
+		'label_description',
+		'desc',
+		'columns',
+		'before',
+		'after',
+		'class',
+		'required',
+		'disabled',
+		'readonly',
+		'hide_from_rest',
+		'hide_from_front',
+		'sanitize_callback',
+		'attributes',
+		'input_attributes',
+		'multiple',
+		// Text and textarea fields
+		'size',
+		'maxlength',
+		'minlength',
+		'pattern',
+		'autocomplete',
+		'autofocus',
+		'prepend',
+		'append',
+		'datalist',
+		'datalist_choices',
+		'textarea_size',
+		// Number and range fields
+		'min',
+		'max',
+		'step',
+		'minmax',
+		// Choice fields (select, radio, checkbox, button group, image select)
+		'options',
+		'std',
+		'inline',
+		'select_all_none',
+		'flatten',
+		'field_type',
+		// Select advanced
+		'js_options',
+		// File and image upload fields
+		'max_file_uploads',
+		'max_file_size',
+		'mime_type',
+		'force_delete',
+		'image_size',
+		'add_to',
+		'max_status',
+		'upload_dir',
+		'unique_filename_callback',
+		// Date and time fields
+		'timestamp',
+		'format',
+		'save_format',
+		// Color picker
+		'alpha_channel',
+		// Wysiwyg editor
+		'raw',
+		'height',
+		// Switch field
+		'style',
+		'on_label',
+		'off_label',
+		// Slider field
+		'prefix',
+		'suffix',
+		// Map and OSM fields
+		'api_key',
+		'address_field',
+		'language',
+		'region',
+		'marker_draggable',
+		// Icon field
+		'icon_set',
+		'icon_file',
+		'icon_dir',
+		'icon_css',
+		// Object fields (taxonomy, post, user)
+		'taxonomy',
+		'post_type',
+		'query_args',
+		'ajax',
+		'add_new',
+		'remove_default',
+		'parent',
+		'display_field',
+		// Block editor field
+		'allowed_blocks',
+		// Group field (Meta Box Group extension)
+		'fields',
+		'collapsible',
+		'default_state',
+		'save_state',
+		'group_title',
+		// Key-value field (sub-type of group)
+		'placeholder_key',
+		'placeholder_value',
+		// Clone extension (Meta Box Group)
+		'clone',
+		'sort_clone',
+		'clone_default',
+		'clone_as_multiple',
+		'min_clone',
+		'max_clone',
+		'add_button',
+		'clone_empty_start',
+		// Meta Box Builder extensions
+		// Text limiter
+		'text_limiter',
+		'limit',
+		'limit_type',
+		// Conditional logic
+		'conditional_logic',
+		'visible',
+		'hidden',
+		// Tabs
+		'tab',
+		// Validation
+		'validation',
+		// Tooltips
+		'tooltip',
+		// Admin columns
+		'admin_columns',
+		// Custom settings container
+		'custom_settings',
+		// Internal use only
 		'_callback',
 	];
 
