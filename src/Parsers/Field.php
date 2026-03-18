@@ -77,6 +77,7 @@ class Field extends Base {
 			->parse_clone()
 			->parse_array_attributes( 'options' )
 			->parse_array_attributes( 'js_options' )
+			->parse_datetime_format()
 			->parse_array_attributes( 'query_args' )
 			->parse_array_attributes( 'attributes' )
 			->parse_text_limiter()
@@ -285,6 +286,43 @@ class Field extends Base {
 		}
 
 		unset( $this->text_limiter );
+		return $this;
+	}
+
+	private function parse_datetime_format() {
+		if ( empty( $this->datetime_format ) ) {
+			return $this;
+		}
+		// Apply for datetime field only
+		if ( $this->type !== 'datetime' ) {
+			return $this;
+		}
+
+		$js_options = is_array( $this->js_options ) ? $this->js_options : [];
+		$separator  = $js_options['separator'] ?? ' ';
+		$pos        = strpos( $this->datetime_format, $separator );
+
+		// Split format (simple format rule: "date time")
+		$date_format = ( false !== $pos ) ? substr( $this->datetime_format, 0, $pos ) : $this->datetime_format; // If no separator, client setup for date format
+		$time_format = ( false !== $pos ) ? substr( $this->datetime_format, $pos + strlen( $separator ) ) : '';
+
+		if ( $date_format ) {
+			$this->format = $date_format;
+
+			if ( empty( $js_options['dateFormat'] ) ) {
+				$js_options['dateFormat'] = $date_format;
+			}
+		}
+
+		if ( $time_format && empty( $this->js_options['timeFormat'] ) ) {
+			$js_options['timeFormat'] = $time_format;
+		}
+
+		$this->js_options = $js_options;
+
+		// Clean data
+		unset( $this->datetime_format );
+
 		return $this;
 	}
 }
