@@ -320,9 +320,6 @@ class Field extends Base {
 
 		$this->js_options = $js_options;
 
-		// Clean data
-		unset( $this->datetime_format );
-
 		return $this;
 	}
 }
