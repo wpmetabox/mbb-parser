@@ -243,4 +243,35 @@ class Field extends Base {
 		}
 		return $this;
 	}
+
+	private function unparse_field_datetime() {
+		// Apply for datetime field only
+		if ( $this->type !== 'datetime' ) {
+			return $this;
+		}
+
+		if ( empty( $this->js_options ) || ! is_array( $this->js_options ) ) {
+			return $this;
+		}
+
+		$date_format = $this->js_options['dateFormat'] ?? '';
+		$time_format = $this->js_options['timeFormat'] ?? '';
+
+		if ( ! $date_format && ! $time_format ) {
+			return $this;
+		}
+
+		$separator = $this->js_options['separator'] ?? ' ';
+
+		if ( $date_format && $time_format ) {
+			$this->datetime_format = $date_format . $separator . $time_format;
+		} elseif ( $date_format ) {
+			$this->datetime_format = $date_format;
+		} else {
+			// handle timeFormat only
+			$this->datetime_format = $time_format;
+		}
+
+		return $this;
+	}
 }
