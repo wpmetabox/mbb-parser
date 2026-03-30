@@ -244,34 +244,41 @@ class Field extends Base {
 		return $this;
 	}
 
-	private function unparse_field_datetime() {
-		// Apply for datetime field only
-		if ( $this->type !== 'datetime' ) {
+	private function unparse_field_datetime(): self {
+		if ( empty( $this->js_options ) ) {
 			return $this;
 		}
 
-		if ( empty( $this->js_options ) || ! is_array( $this->js_options ) ) {
-			return $this;
-		}
-
-		$date_format = $this->js_options['dateFormat'] ?? '';
-		$time_format = $this->js_options['timeFormat'] ?? '';
-
-		if ( ! $date_format && ! $time_format ) {
-			return $this;
-		}
-
-		$separator = $this->js_options['separator'] ?? ' ';
+		$js_options  = is_array( $this->js_options ) ? $this->js_options : [];
+		$date_format = $this->get_js_option_value( $js_options, 'dateFormat' );
+		$time_format = $this->get_js_option_value( $js_options, 'timeFormat' );
+		$separator   = $this->get_js_option_value( $js_options, 'separator' ) ?? ' ';
 
 		if ( $date_format && $time_format ) {
-			$this->datetime_format = $date_format . $separator . $time_format;
+			$this->datetime_format = "{$date_format}{$separator}{$time_format}";
 		} elseif ( $date_format ) {
 			$this->datetime_format = $date_format;
-		} else {
-			// handle timeFormat only
+		} elseif ( $time_format ) {
 			$this->datetime_format = $time_format;
 		}
 
+		foreach ( $js_options as $key => $option ) {
+			if ( isset( $option['key'] ) && in_array( $option['key'], [ 'dateFormat', 'timeFormat', 'separator' ] ) ) {
+				unset( $js_options[ $key ] );
+			}
+		}
+		$this->js_options = $js_options;
+
 		return $this;
+	}
+
+	private function get_js_option_value( array $js_options, string $key ): mixed {
+		foreach ( $js_options as $option ) {
+			if ( isset( $option['key'] ) && $option['key'] === $key ) {
+				return $option['value'] ?? null;
+			}
+		}
+
+		return null;
 	}
 }
