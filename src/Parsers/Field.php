@@ -288,12 +288,8 @@ class Field extends Base {
 		return $this;
 	}
 
-	private function parse_field_datetime() {
+	private function parse_field_datetime(): self {
 		if ( empty( $this->datetime_format ) ) {
-			return $this;
-		}
-		// Apply for datetime field only
-		if ( $this->type !== 'datetime' ) {
 			return $this;
 		}
 
@@ -313,7 +309,13 @@ class Field extends Base {
 			$js_options['timeFormat'] = $time_format;
 		}
 
+		if ( empty( $js_options['separator'] ) ) {
+			$js_options['separator'] = ' ';
+		}
+
 		$this->js_options = $js_options;
+
+		unset( $this->datetime_format );
 
 		return $this;
 	}
