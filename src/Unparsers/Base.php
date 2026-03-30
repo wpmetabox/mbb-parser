@@ -135,21 +135,44 @@ class Base {
 
 		$output = [];
 		foreach ( $conditional_logic as $action => $condition ) {
+			// Fix: chỉ xử lý action đầu tiên ('visible' được ưu tiên hơn 'hidden').
+			// Vòng lặp cũ reset $output['when'] mỗi lần, khiến action trước bị mất.
 			$output['type']     = $action;
 			$output['relation'] = $condition['relation'];
 			$output['when']     = [];
 
 			foreach ( $condition['when'] as $criteria ) {
-				$name = $criteria[0]; // Use field name as key
+				// Fix: dùng uniqid() làm array key thay vì $name.
+				// Nếu cùng field xuất hiện nhiều lần (toán tử khác nhau),
+				// dùng $name làm key khiến rule sau ghi đè rule trước.
+				$uid = uniqid();
 
-				$output['when'][ $name ] = [
-					'id'       => $name,
-					'name'     => $name,
+				// Fix: convert array value thành CSV string.
+				// Parser/Base.php dùng Arr::from_csv() để chuyển "5,6,7" → [5,6,7].
+				// Chiều ngược lại (Unparser), phải convert [5,6,7] → "5,6,7"
+				// để Builder UI hiển thị đúng — vd: 'in' operator với tax_input.
+				$value = $criteria[2] ?? '';
+				if ( is_array( $value ) ) {
+					$value = implode( ',', $value );
+				}
+
+				$output['when'][ $uid ] = [
+					'id'       => $uid,
+					'name'     => $criteria[0],
 					'operator' => $criteria[1],
-					'value'    => $criteria[2],
+					'value'    => $value,
 				];
 			}
+
+			// Chỉ lấy action đầu tiên, thoát vòng lặp.
+			break;
 		}
+
+		// Fix: đánh dấu 'visible' và 'hidden' là đã được xử lý (accessed)
+		// trước khi unset, để unparse_custom_settings() không nhặt chúng lên
+		// và nhét vào custom_settings một cách sai lầm.
+		$this->accessed_keys['visible'] = true;
+		$this->accessed_keys['hidden']  = true;
 		unset( $this->visible, $this->hidden );
 
 		$this->conditional_logic = $output;
