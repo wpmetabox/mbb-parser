@@ -14,7 +14,7 @@
         "riimu/kit-phpencoder": "^2.4"
     },
     "scripts": {
-        "phpcs": "phpcs --standard=phpcs.xml src",
-        "phpcbf": "phpcbf --standard=phpcs.xml src"
+        "phpcs": "phpcs --standard=../meta-box-aio/phpcs.xml",
+        "phpcbf": "phpcbf --standard=../meta-box-aio/phpcs.xml"
     }
 }

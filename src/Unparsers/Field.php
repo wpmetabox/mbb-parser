@@ -263,7 +263,7 @@ class Field extends Base {
 		}
 
 		foreach ( $js_options as $key => $option ) {
-			if ( isset( $option['key'] ) && in_array( $option['key'], [ 'dateFormat', 'timeFormat', 'separator' ] ) ) {
+			if ( isset( $option['key'] ) && in_array( $option['key'], [ 'dateFormat', 'timeFormat', 'separator' ], true ) ) {
 				unset( $js_options[ $key ] );
 			}
 		}
@@ -272,7 +272,7 @@ class Field extends Base {
 		return $this;
 	}
 
-	private function get_js_option_value( array $js_options, string $key ): mixed {
+	private function get_js_option_value( array $js_options, string $key ) {
 		foreach ( $js_options as $option ) {
 			if ( isset( $option['key'] ) && $option['key'] === $key ) {
 				return $option['value'] ?? null;

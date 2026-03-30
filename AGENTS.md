@@ -7,12 +7,12 @@ PHP library for parsing and unparsing Meta Box settings from the builder (provid
 
 ### Lint
 ```bash
-composer phpcs
+composer phpcs src
 ```
 
 ### Fix Auto-fixable Issues
 ```bash
-composer phpcbf
+composer phpcbf src
 ```
 
 ### No Tests
