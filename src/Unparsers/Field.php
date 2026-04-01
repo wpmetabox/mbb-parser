@@ -241,7 +241,7 @@ class Field extends Base {
 	 * "Known" = auto-tracked by SettingsTrait + STRUCTURAL_KEYS pass-through list.
 	 */
 	private function unparse_custom_settings(): self {
-		$always_native = apply_filters( 'mbb_parser_known_field_keys', self::STRUCTURAL_KEYS );
+		$always_native = self::STRUCTURAL_KEYS;
 		$known         = $this->get_accessed_keys() + array_flip( $always_native );
 		$custom        = $this->custom_settings ?? [];
 
