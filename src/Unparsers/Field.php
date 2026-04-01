@@ -10,6 +10,22 @@ class Field extends Base {
 
 	private $choice_types = [ 'select', 'radio', 'checkbox_list', 'select_advanced', 'button_group', 'image_select', 'autocomplete' ];
 
+	/**
+	 * Native keys that no unparse_* method accesses via $this->key (magic method),
+	 * so they are never auto-tracked by SettingsTrait. List them explicitly here to
+	 * prevent unparse_custom_settings() from mis-classifying them as custom attributes.
+	 *
+	 * Every other native key is auto-tracked the moment any method reads or writes
+	 * $this->key — no need to list those here.
+	 */
+	private const STRUCTURAL_KEYS = [
+		'type', 'id', '_id', 'name', 'std', 'placeholder',
+		'columns', 'field_name', '_state', 'input_attributes',
+		'multiple', 'fields', 'tab', 'validation',
+		'custom_settings', '_callback', 'options',
+		'limit', 'limit_type',
+	];
+
 
 	/**
 	 * This is revert of parse method. While parse method converts to the minimal format,
@@ -146,17 +162,14 @@ class Field extends Base {
 
 	private function unparse_text_limiter() {
 		// Accept fields that only export limit_type (limit=0 is stripped on export as default).
-		if ( ! isset( $this->limit ) && ! isset( $this->limit_type ) ) {
+		if ( ! isset( $this->limit ) ) {
 			return $this;
 		}
 
 		$this->text_limiter = [
-			'limit'      => $this->limit ?? 0,
+			'limit'      => $this->limit,
 			'limit_type' => $this->limit_type ?? 'word',
 		];
-
-		// Remove flat keys so they are not double-stored alongside text_limiter.
-		unset( $this->settings['limit'], $this->settings['limit_type'] );
 
 		return $this;
 	}
@@ -214,24 +227,6 @@ class Field extends Base {
 		$this->admin_columns = array_merge( $defaults, $this->admin_columns );
 		return $this;
 	}
-
-	/**
-	 * Pure pass-through keys that no unparse_* method ever reads via $this->key.
-	 * They are kept in settings as-is, so they must never be classified as
-	 * user-defined custom attributes.
-	 *
-	 * Every other native key is auto-tracked by SettingsTrait the moment any
-	 * method does $this->key — no need to list them here.
-	 *
-	 * Extend via filter:
-	 *   add_filter( 'mbb_parser_known_field_keys', fn( $k ) => array_merge( $k, [ 'my_key' ] ) );
-	 */
-	private const STRUCTURAL_KEYS = [
-		'type', 'id', '_id', 'name', 'std', 'placeholder',
-		'columns', 'field_name', '_state', 'input_attributes',
-		'multiple', 'fields', 'tab', 'validation',
-		'custom_settings', '_callback', 'options',
-	];
 
 	/**
 	 * Detect unknown top-level keys and move them into the custom_settings

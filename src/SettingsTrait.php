@@ -15,7 +15,7 @@ trait SettingsTrait {
 	 *
 	 * @var string[]
 	 */
-	private $accessed_keys = [];
+	private array $accessed_keys = [];
 
 	public function get_settings(): array {
 		return $this->settings;
