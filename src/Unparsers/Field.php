@@ -161,7 +161,6 @@ class Field extends Base {
 	}
 
 	private function unparse_text_limiter() {
-		// Accept fields that only export limit_type (limit=0 is stripped on export as default).
 		if ( ! isset( $this->limit ) ) {
 			return $this;
 		}
