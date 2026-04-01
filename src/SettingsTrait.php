@@ -11,9 +11,9 @@ trait SettingsTrait {
 
 	/**
 	 * Keys accessed via __get / __set / __isset during this object's lifetime.
-	 * Stored as a hash-map (key => true) for O(1) lookup.
+	 * Used by unparse_custom_settings() to detect natively-handled keys.
 	 *
-	 * @var array<string, true>
+	 * @var string[]
 	 */
 	private $accessed_keys = [];
 
@@ -27,17 +27,17 @@ trait SettingsTrait {
 	}
 
 	public function __get( string $key ) {
-		$this->accessed_keys[ $key ] = true;
+		$this->accessed_keys[] = $key;
 		return $this->settings[ $key ] ?? null;
 	}
 
 	public function __set( string $key, $value ): void {
-		$this->accessed_keys[ $key ] = true;
+		$this->accessed_keys[] = $key;
 		$this->settings[ $key ] = $value;
 	}
 
 	public function __isset( string $key ): bool {
-		$this->accessed_keys[ $key ] = true;
+		$this->accessed_keys[] = $key;
 		return isset( $this->settings[ $key ] );
 	}
 

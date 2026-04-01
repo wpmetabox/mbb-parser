@@ -241,12 +241,11 @@ class Field extends Base {
 	 * "Known" = auto-tracked by SettingsTrait + STRUCTURAL_KEYS pass-through list.
 	 */
 	private function unparse_custom_settings(): self {
-		$always_native = self::STRUCTURAL_KEYS;
-		$known         = $this->get_accessed_keys() + array_flip( $always_native );
-		$custom        = $this->custom_settings ?? [];
+		$known  = array_merge( $this->get_accessed_keys(), self::STRUCTURAL_KEYS );
+		$custom = $this->custom_settings ?? [];
 
-		foreach ( array_diff_key( $this->settings, $known ) as $key => $value ) {
-			if ( is_resource( $value ) ) {
+		foreach ( $this->settings as $key => $value ) {
+			if ( in_array( $key, $known, true ) ) {
 				continue;
 			}
 
