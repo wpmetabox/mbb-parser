@@ -34,7 +34,8 @@ class Field extends Base {
 			->unparse_conditional_logic()
 			->unparse_tooltip()
 			->unparse_admin_columns()
-			->ensure_boolean( 'save_field' );
+			->ensure_boolean( 'save_field' )
+			->unparse_custom_settings();
 
 		$func = "unparse_field_{$this->type}";
 		if ( method_exists( $this, $func ) ) {
@@ -310,5 +311,69 @@ class Field extends Base {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Detect keys in the JSON that are not native MetaBox field settings
+	 * and move them into the custom_settings array format that the Builder
+	 * UI can read and display in the Advanced tab.
+	 *
+	 * Requires meta-box-builder plugin to be active (safe fallback if not).
+	 */
+	private function unparse_custom_settings(): self {
+		// Safe fallback: only run when Builder's FieldKeys helper is available.
+		if ( ! class_exists( '\\MBB\\Helpers\\FieldKeys' ) ) {
+			return $this;
+		}
+
+		// All native keys across EVERY registered field type.
+		// Using the full union ensures per-type lookups don't accidentally
+		// flag a native key as "custom" when the field type registry is partial.
+		$all_native_keys = \MBB\Helpers\FieldKeys::get_all_native_keys();
+
+		// Truly structural keys that are never in the API registry:
+		// - Identity keys not exposed as "controls" (_id, fields).
+		// - Complex objects already transformed by dedicated unparse_*() methods.
+		$structural_keys = [
+			'_id',
+			'fields',
+			'conditional_logic',
+			'text_limiter',
+			'tooltip',
+			'admin_columns',
+			// Defaults injected by unparse_default_values() — present in registry
+			// for most types but kept here as safety net for unknown field types.
+			'save_field', 'label_description', 'desc', 'size',
+			'hide_from_rest', 'hide_from_front',
+			'before', 'after', 'class', 'sanitize_callback',
+			'required', 'disabled', 'readonly', 'prepend', 'append',
+		];
+
+		$known_keys = array_merge( $all_native_keys, $structural_keys );
+
+		// Move any unrecognized key into custom_settings format.
+		$custom_settings = $this->settings['custom_settings'] ?? [];
+
+		foreach ( array_keys( $this->settings ) as $key ) {
+			if ( in_array( $key, $known_keys, true ) ) {
+				continue;
+			}
+
+			// Format required by Builder UI's KeyValue control.
+			$uid                     = uniqid();
+			$custom_settings[ $uid ] = [
+				'id'    => $uid,
+				'key'   => $key,
+				'value' => (string) $this->settings[ $key ],
+			];
+
+			unset( $this->settings[ $key ] );
+		}
+
+		if ( ! empty( $custom_settings ) ) {
+			$this->settings['custom_settings'] = $custom_settings;
+		}
+
+		return $this;
 	}
 }
