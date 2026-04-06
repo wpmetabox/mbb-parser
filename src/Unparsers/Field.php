@@ -341,12 +341,22 @@ class Field extends Base {
 				continue;
 			}
 
+			// Dot notation: "parent.child" → traverse nested array.
+			$value = strpos( $key, '.' ) !== false
+				? array_reduce( explode( '.', $key ), fn( $carry, $part ) => $carry[ $part ] ?? null, $this->settings )
+				: $this->settings[ $key ];
+
+			// JSON notation: encode arrays/objects instead of casting to "Array".
+			if ( is_array( $value ) || is_object( $value ) ) {
+				$value = wp_json_encode( $value );
+			}
+
 			// Format required by Builder UI's KeyValue control.
 			$uid                     = uniqid();
 			$custom_settings[ $uid ] = [
 				'id'    => $uid,
 				'key'   => $key,
-				'value' => (string) $this->settings[ $key ],
+				'value' => (string) $value,
 			];
 
 			unset( $this->settings[ $key ] );
