@@ -321,6 +321,20 @@ class Field extends Base {
 	}
 
 	private function parse_field_block_editor(): self {
+		// If users enter a callback for allowed blocks, run it.
+		if ( isset( $this->_callback ) && is_callable( $this->_callback ) ) {
+			$allowed_blocks = call_user_func( $this->_callback );
+			if ( ! empty( $allowed_blocks ) && is_array( $allowed_blocks ) ) {
+				$this->allowed_blocks = $allowed_blocks;
+			} else {
+				unset( $this->allowed_blocks );
+			}
+			unset( $this->_callback, $this->allowed_block_list );
+			return $this;
+		}
+		unset( $this->_callback );
+
+		// If users select a list.
 		if ( ! class_exists( '\MBB\Helpers\AllowedBlockLists' ) ) {
 			return $this;
 		}
