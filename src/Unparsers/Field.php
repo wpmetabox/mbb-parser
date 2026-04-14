@@ -341,34 +341,16 @@ class Field extends Base {
 				continue;
 			}
 
-			// Dot notation: "parent.child" → traverse nested array.
-			$value = strpos( $key, '.' ) !== false
-				? array_reduce( explode( '.', $key ), fn( $carry, $part ) => $carry[ $part ] ?? null, $this->settings )
-				: $this->settings[ $key ];
-
-			$flatten_array = function ( $array, $prefix ) use ( &$flatten_array ) {
-				$result = [];
-				foreach ( $array as $k => $v ) {
-					$new_key = $prefix === '' ? $k : $prefix . '.' . $k;
-					if ( is_array( $v ) || is_object( $v ) ) {
-						$result = array_merge( $result, $flatten_array( (array) $v, $new_key ) );
-					} else {
-						$result[ $new_key ] = $v;
-					}
-				}
-				return $result;
-			};
+			$value = $this->settings[ $key ];
 
 			$values_to_add = [];
 			if ( is_array( $value ) || is_object( $value ) ) {
-				$flat = $flatten_array( (array) $value, $key );
-				foreach ( $flat as $f_key => $f_val ) {
-					$values_to_add[ $f_key ] = (string) $f_val;
-				}
+				$values_to_add = $this->array_to_dot_notation( (array) $value, $key );
 				// JSON notation: encode arrays/objects instead of casting to "Array".
 				$values_to_add[ $key ] = wp_json_encode( $value );
 			} else {
-				$values_to_add[ $key ] = (string) $value;
+				$tmp = $this->array_to_dot_notation( [ $key => $value ] );
+				$values_to_add[ $key ] = $tmp[ $key ] ?? '';
 			}
 
 			// Format required by Builder UI's KeyValue control.
@@ -376,8 +358,8 @@ class Field extends Base {
 				$uid                     = uniqid();
 				$custom_settings[ $uid ] = [
 					'id'    => $uid,
-					'key'   => $k,
-					'value' => $v,
+					'key'   => (string) $k,
+					'value' => (string) $v,
 				];
 			}
 
