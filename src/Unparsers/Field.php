@@ -337,29 +337,18 @@ class Field extends Base {
 		$custom_settings = $this->settings['custom_settings'] ?? [];
 
 		foreach ( $this->original_keys as $key ) {
-			if ( in_array( $key, $all_keys, true ) ) {
+			if ( in_array( $key, $all_keys, true ) || ! isset( $this->settings[ $key ] ) ) {
 				continue;
 			}
 
-			$value = $this->settings[ $key ];
-
-			$values_to_add = [];
-			if ( is_array( $value ) || is_object( $value ) ) {
-				$values_to_add = $this->array_to_dot_notation( (array) $value, $key );
-				// JSON notation: encode arrays/objects instead of casting to "Array".
-				$values_to_add[ $key ] = wp_json_encode( $value );
-			} else {
-				$tmp = $this->array_to_dot_notation( [ $key => $value ] );
-				$values_to_add[ $key ] = $tmp[ $key ] ?? '';
-			}
-
-			// Format required by Builder UI's KeyValue control.
-			foreach ( $values_to_add as $k => $v ) {
+			$value  = $this->settings[ $key ];
+			$values = $this->array_to_dot_notation( [ $key => $value ] );
+			foreach ( $values as $k => $v ) {
 				$uid                     = uniqid();
 				$custom_settings[ $uid ] = [
 					'id'    => $uid,
-					'key'   => (string) $k,
-					'value' => (string) $v,
+					'key'   => $k,
+					'value' => $v,
 				];
 			}
 
