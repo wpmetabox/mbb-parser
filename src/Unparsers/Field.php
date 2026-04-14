@@ -346,18 +346,40 @@ class Field extends Base {
 				? array_reduce( explode( '.', $key ), fn( $carry, $part ) => $carry[ $part ] ?? null, $this->settings )
 				: $this->settings[ $key ];
 
-			// JSON notation: encode arrays/objects instead of casting to "Array".
+			$flatten_array = function ( $array, $prefix ) use ( &$flatten_array ) {
+				$result = [];
+				foreach ( $array as $k => $v ) {
+					$new_key = $prefix === '' ? $k : $prefix . '.' . $k;
+					if ( is_array( $v ) || is_object( $v ) ) {
+						$result = array_merge( $result, $flatten_array( (array) $v, $new_key ) );
+					} else {
+						$result[ $new_key ] = $v;
+					}
+				}
+				return $result;
+			};
+
+			$values_to_add = [];
 			if ( is_array( $value ) || is_object( $value ) ) {
-				$value = wp_json_encode( $value );
+				$flat = $flatten_array( (array) $value, $key );
+				foreach ( $flat as $f_key => $f_val ) {
+					$values_to_add[ $f_key ] = (string) $f_val;
+				}
+				// JSON notation: encode arrays/objects instead of casting to "Array".
+				$values_to_add[ $key ] = wp_json_encode( $value );
+			} else {
+				$values_to_add[ $key ] = (string) $value;
 			}
 
 			// Format required by Builder UI's KeyValue control.
-			$uid                     = uniqid();
-			$custom_settings[ $uid ] = [
-				'id'    => $uid,
-				'key'   => $key,
-				'value' => (string) $value,
-			];
+			foreach ( $values_to_add as $k => $v ) {
+				$uid                     = uniqid();
+				$custom_settings[ $uid ] = [
+					'id'    => $uid,
+					'key'   => $k,
+					'value' => $v,
+				];
+			}
 
 			unset( $this->settings[ $key ] );
 		}
