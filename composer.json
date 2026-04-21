@@ -10,7 +10,7 @@
         "psr-4": {"MBBParser\\": "src/"}
     },
     "require": {
-    	"wpmetabox/support": "dev-master",
+    	"wpmetabox/support": "^1",
         "riimu/kit-phpencoder": "^2.4"
     },
     "scripts": {
