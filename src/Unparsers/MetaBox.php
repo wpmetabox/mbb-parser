@@ -53,9 +53,9 @@ class MetaBox extends Base {
 		$this->unparse_post_fields();
 		$this->unparse_modified();
 		$this->unparse_settings();
-		$this->unparse_fields();
 		$this->unparse_custom_table();
 		$this->unparse_tabs();
+		$this->unparse_fields();
 		$this->unparse_validation();
 		$this->unparse_geo_location();
 		$this->unparse_columns();
@@ -151,12 +151,10 @@ class MetaBox extends Base {
 		];
 		$this->settings['settings']['custom_settings'] = $custom_settings;
 
-		// Rebuild fields with tab fields first
 		$added_tabs      = [];
-		$original_fields = $this->settings['fields'] ?? [];
+		$original_fields = $this->settings['meta_box']['fields'] ?? [];
 		$new_fields      = [];
 
-		// Add fields under this tab
 		foreach ( $original_fields as $id => $field ) {
 			if ( ! isset( $field['tab'] ) ) {
 				$new_fields[ $id ] = $field;
@@ -188,16 +186,15 @@ class MetaBox extends Base {
 				'icon_url'  => $icon_type === 'url' ? $icon : '',
 			];
 
-			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
-			if ( ! in_array( $field['tab'], $added_tabs ) ) {
+			if ( ! in_array( $field['tab'], $added_tabs, true ) ) {
 				$new_fields[ $field['tab'] ] = $tab_field;
-				$added_tabs[]                = $tab_field;
+				$added_tabs[]                = $field['tab'];
 			}
 
 			$new_fields[ $id ] = $field;
 		}
 
-		$this->settings['fields'] = $new_fields;
+		$this->settings['meta_box']['fields'] = $new_fields;
 		return $this;
 	}
 
@@ -497,6 +494,12 @@ class MetaBox extends Base {
 
 	public function convert_fields_for_builder( $fields = [] ): array {
 		foreach ( $fields as $id => $field ) {
+			if ( isset( $field['type'] ) && $field['type'] === 'tab' ) {
+				unset( $fields[ $id ] );
+				$fields[ $field['_id'] ?? $field['id'] ] = $field;
+				continue;
+			}
+
 			$unparser = new Field( $field );
 			$unparser->unparse();
 
