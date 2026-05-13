@@ -333,11 +333,13 @@ class Field extends Base {
 
 		$all_keys = \MBB\Helpers\FieldKeys::all();
 
+		$structural_keys = [ '_id', 'fields', 'tab' ];
+
 		// Move any unrecognized key into custom_settings format.
 		$custom_settings = $this->settings['custom_settings'] ?? [];
 
 		foreach ( $this->original_keys as $key ) {
-			if ( in_array( $key, $all_keys, true ) || ! isset( $this->settings[ $key ] ) ) {
+			if ( in_array( $key, $all_keys, true ) || in_array( $key, $structural_keys, true ) || ! isset( $this->settings[ $key ] ) ) {
 				continue;
 			}
 
