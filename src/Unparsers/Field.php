@@ -250,7 +250,7 @@ class Field extends Base {
 		}
 
 		$lists  = \MBB\Helpers\AllowedBlockLists::get_lists();
-		$blocks = (array) $this->allowed_blocks;
+		$blocks = \MBB\Helpers\AllowedBlockLists::filter_valid_blocks( (array) $this->allowed_blocks );
 
 		// Check if a list with the same blocks already exists.
 		foreach ( $lists as $id => $list ) {
