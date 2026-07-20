@@ -46,7 +46,7 @@ class Settings extends Base {
 			return $this;
 		}
 
-		if ( in_array( $this->type, [ 'user', 'comment' ], true ) ) {
+		if ( in_array( $this->type, [ 'user', 'comment', 'order' ], true ) ) {
 			$this->object_type = $this->type;
 
 			unset( $this->post_types );

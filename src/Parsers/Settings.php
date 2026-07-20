@@ -51,7 +51,7 @@ class Settings extends Base {
 			unset( $this->post_types );
 			unset( $this->taxonomies );
 			unset( $this->type );
-		} elseif ( in_array( $object_type, [ 'block', 'user', 'comment' ], true ) ) {
+		} elseif ( in_array( $object_type, [ 'block', 'user', 'comment', 'order' ], true ) ) {
 			unset( $this->post_types );
 			unset( $this->taxonomies );
 			unset( $this->settings_pages );
