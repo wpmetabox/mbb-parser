@@ -46,7 +46,7 @@ class Settings extends Base {
 			return $this;
 		}
 
-		if ( in_array( $this->type, [ 'user', 'comment', 'order' ], true ) ) {
+		if ( in_array( $this->type, [ 'user', 'comment' ], true ) ) {
 			$this->object_type = $this->type;
 
 			unset( $this->post_types );
@@ -59,6 +59,16 @@ class Settings extends Base {
 			unset( $this->revision );
 			unset( $this->context );
 			unset( $this->default_hidden );
+
+			return $this;
+		}
+
+		if ( $this->type === 'order' ) {
+			$this->object_type = $this->type;
+			$this->ensure_array( 'post_types' );
+
+			unset( $this->taxonomies );
+			unset( $this->settings_pages );
 
 			return $this;
 		}
