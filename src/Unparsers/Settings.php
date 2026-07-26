@@ -70,6 +70,9 @@ class Settings extends Base {
 			unset( $this->taxonomies );
 			unset( $this->settings_pages );
 
+			// ONLY need to unset 'revision'
+			unset( $this->revision );
+
 			return $this;
 		}
 
