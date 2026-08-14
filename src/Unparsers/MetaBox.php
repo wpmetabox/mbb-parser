@@ -272,8 +272,12 @@ class MetaBox extends Base {
 	}
 
 	public function unparse_modified() {
-		$this->settings['modified']             = $this->lookup( [ 'modified', 'meta_box.modified' ], time() );
-		$this->settings['meta_box']['modified'] = $this->settings['modified'];
+		$modified                   = $this->lookup( [ 'modified', 'meta_box.modified', 'settings.modified', 'model.modified' ], time() );
+		$this->settings['modified'] = $modified;
+
+		if ( $this->detect_post_type() === 'meta-box' ) {
+			$this->settings['meta_box']['modified'] = $modified;
+		}
 
 		return $this;
 	}
@@ -445,6 +449,15 @@ class MetaBox extends Base {
 		$settings = $this->settings['settings'] ?? [];
 
 		if ( ! empty( $settings ) ) {
+			return $this;
+		}
+
+		if ( $this->detect_post_type() === 'mb-model' ) {
+			$model = $this->settings['model'] ?? [];
+			if ( ! empty( $model ) && is_array( $model ) ) {
+				unset( $model['keys'], $model['post_id'] );
+				$this->settings['settings'] = $model;
+			}
 			return $this;
 		}
 
