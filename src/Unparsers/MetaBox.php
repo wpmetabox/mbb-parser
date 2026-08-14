@@ -225,14 +225,14 @@ class MetaBox extends Base {
 		// For short reference.
 		$custom_table = &$this->settings['settings']['custom_table'];
 
-		$fg_settings       = $this->settings['settings'] ?? [];
-		$object_type       = (string) ( $fg_settings['object_type'] ?? '' );
-		$models            = array_filter( (array) ( $fg_settings['models'] ?? [] ) );
-		$is_model_location = 'model' === $object_type || ! empty( $models );
+		$settings    = $this->settings['settings'] ?? [];
+		$object_type = (string) ( $settings['object_type'] ?? '' );
+		$models      = array_filter( (array) ( $settings['models'] ?? [] ) );
+		$is_model    = 'model' === $object_type || ! empty( $models );
 
 		// Post/term/user: recover enable + name from the resolved table.
 		// Models: keep explicit manage/create/columns; do not force enable from the model table.
-		if ( isset( $this->table ) && ! $is_model_location ) {
+		if ( isset( $this->table ) && ! $is_model ) {
 			$name = $this->table;
 
 			if ( ! empty( $custom_table['prefix'] ) ) {
