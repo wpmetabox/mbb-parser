@@ -57,7 +57,7 @@ class MetaBox extends Base {
 		$this->unparse_modified();
 		$this->unparse_settings();
 
-		// Settings page and block read the settings that unparse_settings() builds.
+		// Settings page menu fields need settings seeded above.
 		$this->unparse_settings_page_menu();
 		$this->unparse_block_icon();
 
@@ -676,8 +676,8 @@ class MetaBox extends Base {
 			return $this;
 		}
 
-		// Models build their settings in unparse_model_settings(), which runs earlier.
-		if ( $this->detect_post_type() === 'mb-model' ) {
+		// Field-group defaults only. Other types build settings elsewhere.
+		if ( $this->detect_post_type() !== 'meta-box' ) {
 			return $this;
 		}
 
