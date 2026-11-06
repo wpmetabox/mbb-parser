@@ -788,11 +788,6 @@ class MetaBox extends Base {
 				$field['fields'] = $this->convert_fields_for_builder( $field['fields'] );
 			}
 
-			// Ensure _id always exists
-			if ( empty( $field['_id'] ) ) {
-				$field['_id'] = $field['id'] ?? uniqid( 'field_' );
-			}
-
 			unset( $fields[ $id ] );
 			$fields[ $field['_id'] ] = $field;
 		}
