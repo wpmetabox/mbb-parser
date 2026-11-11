@@ -11,7 +11,7 @@
     },
     "require": {
     	"wpmetabox/support": "^1",
-        "riimu/kit-phpencoder": "^2.4"
+        "wpmetabox/kit-phpencoder": "^2.4.3"
     },
     "scripts": {
         "phpcs": "phpcs --standard=../meta-box-aio/phpcs.xml",
