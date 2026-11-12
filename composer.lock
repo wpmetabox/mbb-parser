@@ -4,24 +4,27 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c835932d4ea5a87711d9a11ed1d0c3d3",
+    "content-hash": "644ad47d6e798f07d3de1050eaa8b004",
     "packages": [
         {
-            "name": "riimu/kit-phpencoder",
-            "version": "v2.4.2",
+            "name": "wpmetabox/kit-phpencoder",
+            "version": "v2.4.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Riimu/Kit-PHPEncoder.git",
-                "reference": "72ff7825de193b272e17b228394819dbfc638e72"
+                "url": "https://github.com/wpmetabox/kit-phpencoder.git",
+                "reference": "d6a0c4f0002347bfce6a21c7f77a3d56727bce1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Riimu/Kit-PHPEncoder/zipball/72ff7825de193b272e17b228394819dbfc638e72",
-                "reference": "72ff7825de193b272e17b228394819dbfc638e72",
+                "url": "https://api.github.com/repos/wpmetabox/kit-phpencoder/zipball/d6a0c4f0002347bfce6a21c7f77a3d56727bce1a",
+                "reference": "d6a0c4f0002347bfce6a21c7f77a3d56727bce1a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0"
+                "php": ">=7.1"
+            },
+            "replace": {
+                "riimu/kit-phpencoder": "self.version"
             },
             "type": "library",
             "autoload": {
@@ -50,10 +53,9 @@
                 "variable"
             ],
             "support": {
-                "issues": "https://github.com/Riimu/Kit-PHPEncoder/issues",
-                "source": "https://github.com/Riimu/Kit-PHPEncoder/tree/v2.4.2"
+                "source": "https://github.com/wpmetabox/kit-phpencoder/tree/v2.4.3"
             },
-            "time": "2022-12-10T18:12:25+00:00"
+            "time": "2026-11-11T06:55:25+00:00"
         },
         {
             "name": "wpmetabox/support",
