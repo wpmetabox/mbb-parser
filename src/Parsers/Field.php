@@ -225,9 +225,15 @@ class Field extends Base {
 	}
 
 	private function parse_upload_dir() {
-		if ( $this->upload_dir ) {
-			$this->upload_dir = trailingslashit( ABSPATH ) . untrailingslashit( $this->upload_dir );
+		if ( ! $this->upload_dir ) {
+			return $this;
 		}
+
+		$root = wp_normalize_path( untrailingslashit( ABSPATH ) );
+		$dir  = wp_normalize_path( untrailingslashit( $this->upload_dir ) );
+
+		// Forward slashes survive wp_unslash() on Windows. A path already inside WordPress is left unchanged.
+		$this->upload_dir = str_starts_with( $dir . '/', $root . '/' ) ? $dir : $root . '/' . ltrim( $dir, '/' );
 		return $this;
 	}
 
