@@ -229,11 +229,20 @@ class Field extends Base {
 			return $this;
 		}
 
-		$root = wp_normalize_path( untrailingslashit( ABSPATH ) );
-		$dir  = wp_normalize_path( untrailingslashit( $this->upload_dir ) );
+		$root = trailingslashit( wp_normalize_path( ABSPATH ) );
+		$dir  = trailingslashit( wp_normalize_path( $this->upload_dir ) );
 
-		// Forward slashes survive wp_unslash() on Windows. A path already inside WordPress is left unchanged.
-		$this->upload_dir = str_starts_with( $dir . '/', $root . '/' ) ? $dir : $root . '/' . ltrim( $dir, '/' );
+		// Forward slashes survive wp_unslash() on Windows.
+		// A path inside WordPress keeps ABSPATH's casing. An absolute path outside stays unchanged.
+		$inside   = 'Windows' === PHP_OS_FAMILY ? strncasecmp( $dir, $root, strlen( $root ) ) === 0 : str_starts_with( $dir, $root );
+		$relative = ! str_starts_with( $dir, '/' ) && ! preg_match( '#^[A-Za-z]:/#', $dir );
+		if ( $inside ) {
+			$dir = $root . substr( $dir, strlen( $root ) );
+		} elseif ( $relative ) {
+			$dir = $root . ltrim( $dir, '/' );
+		}
+
+		$this->upload_dir = untrailingslashit( $dir );
 		return $this;
 	}
 
