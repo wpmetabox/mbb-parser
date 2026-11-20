@@ -821,7 +821,8 @@ class MetaBox extends Base {
 					];
 				}
 
-				$fields[ $field['id'] ] = $field;
+				$fields[ $fid ] = $field;
+				break;
 			}
 		}
 		$this->fields = $fields;
