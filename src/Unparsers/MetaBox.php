@@ -805,7 +805,7 @@ class MetaBox extends Base {
 		$fields = $this->fields;
 		foreach ( $validation['rules'] as $field_id => $rules ) {
 			foreach ( $fields as $fid => $field ) {
-				if ( $field['id'] !== $field_id ) {
+				if ( 'tab' === ( $field['type'] ?? '' ) || $field['id'] !== $field_id ) {
 					continue;
 				}
 
@@ -822,7 +822,6 @@ class MetaBox extends Base {
 				}
 
 				$fields[ $fid ] = $field;
-				break;
 			}
 		}
 		$this->fields = $fields;
